@@ -19,7 +19,7 @@ onAuthStateChanged
 
 // ================= FIREBASE =================
 const firebaseConfig = {
-apiKey: "AIzaSyDpI19VV9zdNjAYPp97Y12T6A8kot3GbmA",
+apiKey: "AIzaSyDpI19Vv9zdNjAYPp97Y12T6A8kot3GbmA",
 authDomain: "marisa-portal.firebaseapp.com",
 projectId: "marisa-portal",
 storageBucket: "marisa-portal.firebasestorage.app",
@@ -31,49 +31,70 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// ================= GLOBAL USER =================
-let currentUserEmail = null;
+// ================= STATE =================
+let currentUser = null;
 
 const WIFE_EMAIL = "mnrudnick4@gmail.com";
 
-// ================= LOGIN =================
+// ================= AUTH STATE =================
 onAuthStateChanged(auth, (user) => {
-if (!user) {
-document.getElementById("loginPage").style.display = "flex";
-document.getElementById("app").style.display = "none";
-return;
+const loginPage = document.getElementById("loginPage");
+const appPage = document.getElementById("app");
+
+if (!loginPage || !appPage) return;
+
+if (user) {
+currentUser = user;
+
+loginPage.style.display = "none";
+appPage.style.display = "block";
+
+console.log("Logged in as:", user.email);
+} else {
+currentUser = null;
+
+loginPage.style.display = "flex";
+appPage.style.display = "none";
 }
-
-currentUserEmail = user.email; // 🔥 FORCE STORE EMAIL
-
-document.getElementById("loginPage").style.display = "none";
-document.getElementById("app").style.display = "block";
 });
 
-// ================= AUTH =================
+// ================= AUTH ACTIONS =================
 window.signup = () => {
-createUserWithEmailAndPassword(
-auth,
-document.getElementById("email").value,
-document.getElementById("password").value
-).catch(e => alert(e.message));
+const email = document.getElementById("email")?.value;
+const password = document.getElementById("password")?.value;
+
+if (!email || !password) return alert("Enter email + password");
+
+createUserWithEmailAndPassword(auth, email, password)
+.catch(e => alert("SIGNUP ERROR: " + e.message));
 };
 
 window.login = () => {
-signInWithEmailAndPassword(
-auth,
-document.getElementById("email").value,
-document.getElementById("password").value
-).catch(e => alert(e.message));
+const email = document.getElementById("email")?.value;
+const password = document.getElementById("password")?.value;
+
+if (!email || !password) return alert("Enter email + password");
+
+signInWithEmailAndPassword(auth, email, password)
+.catch(e => alert("LOGIN ERROR: " + e.message));
+};
+
+window.logout = () => {
+auth.signOut()
+.catch(e => alert(e.message));
+};
+
+window.refreshApp = () => {
+location.reload();
 };
 
 // ================= NAV =================
 window.showPage = (page) => {
 ["chatPage","todoPage","malanaPage","gamesPage"].forEach(id=>{
-document.getElementById(id).classList.add("hidden");
+document.getElementById(id)?.classList.add("hidden");
 });
 
-document.getElementById(page + "Page").classList.remove("hidden");
+document.getElementById(page + "Page")?.classList.remove("hidden");
 };
 
 // ================= CHAT =================
@@ -81,11 +102,11 @@ const chatRef = collection(db, "messages");
 
 window.sendMessage = () => {
 const input = document.getElementById("messageInput");
-if (!input.value.trim()) return;
+if (!input?.value.trim()) return;
 
 addDoc(chatRef, {
 text: input.value,
-sender: currentUserEmail,
+sender: currentUser?.email || "unknown",
 time: Date.now(),
 seenBy: []
 });
@@ -93,29 +114,27 @@ seenBy: []
 input.value = "";
 };
 
-// ================= FIXED RENDER =================
+// ================= CHAT RENDER =================
 onSnapshot(query(chatRef, orderBy("time","asc")), (snap) => {
 
 const box = document.getElementById("messages");
-box.innerHTML = "";
+if (!box) return;
 
-// 🔥 DEBUG (you can remove later)
-console.log("CURRENT USER:", currentUserEmail);
+box.innerHTML = "";
 
 snap.forEach(docSnap => {
 
 const data = docSnap.data();
 
-const sender = data.sender;
+const sender = data.sender || "";
 
-// FORCE STRING COMPARISON SAFETY
-const isYou = String(sender).toLowerCase() === String(currentUserEmail).toLowerCase();
-const isWife = String(sender).toLowerCase() === WIFE_EMAIL.toLowerCase();
+const isYou = currentUser && sender === currentUser.email;
+const isWife = sender === WIFE_EMAIL;
 
-let color = "#2a2f36"; // default
+let bg = "#2a2f36";
 
-if (isWife) color = "#ff4fa3"; // PINK
-else if (isYou) color = "#3a86ff"; // BLUE
+if (isYou) bg = "#3a86ff";
+if (isWife) bg = "#ff4fa3";
 
 const div = document.createElement("div");
 
@@ -125,17 +144,19 @@ div.style.padding = "10px";
 div.style.borderRadius = "15px";
 div.style.color = "white";
 div.style.alignSelf = isYou ? "flex-end" : "flex-start";
-div.style.background = color;
+div.style.background = bg;
 
 const time = new Date(data.time).toLocaleTimeString([], {
-hour: "2-digit",
-minute: "2-digit"
+hour:"2-digit",
+minute:"2-digit"
 });
+
+const seen = data.seenBy?.length > 1 ? "Seen 👀" : "";
 
 div.innerHTML = `
 ${data.text || ""}
-<div style="font-size:10px;opacity:0.7;margin-top:5px;">
-${time}
+<div style="font-size:10px;opacity:0.6;margin-top:5px;">
+${time} ${seen}
 </div>
 `;
 
@@ -150,7 +171,7 @@ const todoRef = collection(db,"todos");
 
 window.addTask = () => {
 const input = document.getElementById("todoInput");
-if (!input.value.trim()) return;
+if (!input?.value.trim()) return;
 
 addDoc(todoRef,{
 text:input.value,
@@ -162,7 +183,10 @@ input.value="";
 
 onSnapshot(query(todoRef,orderBy("time","asc")),(snap)=>{
 const list=document.getElementById("todoList");
+if (!list) return;
+
 list.innerHTML="";
+
 snap.forEach(d=>{
 const li=document.createElement("li");
 li.textContent=d.data().text;
@@ -173,19 +197,22 @@ list.appendChild(li);
 // ================= MALANA =================
 window.askMalana = () => {
 const input=document.getElementById("aiInput");
-if(!input.value.trim()) return;
+if(!input?.value.trim()) return;
 
 const box=document.getElementById("aiMessages");
+if (!box) return;
 
-box.innerHTML+=`
-<div class="message">${input.value}</div>
-`;
+box.innerHTML += `<div class="message">${input.value}</div>`;
 
-box.innerHTML+=`
-<div class="message">
-${["I hear you ❤️","Got you.","Keep going ❤️"][Math.floor(Math.random()*3)]}
-</div>
-`;
+const replies = [
+"I hear you ❤️",
+"Got you.",
+"Keep going ❤️"
+];
+
+box.innerHTML += `<div class="message">
+${replies[Math.floor(Math.random()*replies.length)]}
+</div>`;
 
 input.value="";
 };
@@ -194,7 +221,8 @@ input.value="";
 let current="X";
 
 window.move=(cell)=>{
-if(cell.textContent) return;
+if(!cell || cell.textContent) return;
+
 cell.textContent=current;
 current=current==="X"?"O":"X";
 };
