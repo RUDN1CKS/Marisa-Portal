@@ -14,14 +14,16 @@ import {
   query,
   orderBy,
   onSnapshot,
-  serverTimestamp
+  serverTimestamp,
+  doc,
+  setDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // =======================
 // FIREBASE CONFIG
 // =======================
 const firebaseConfig = {
-  apiKey: "AIzaSyDpI19VV9zdNjAYPp97Y12T6A8kot3GbmA",
+  apiKey: "AIzaSyDpI19Vv9zdNjAYPp97Y12T6A8kot3GbmA",
   authDomain: "marisa-portal.firebaseapp.com",
   projectId: "marisa-portal",
   storageBucket: "marisa-portal.firebasestorage.app",
@@ -34,68 +36,63 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 // =======================
-// WAIT FOR DOM SAFELY
+// SAFE DOM LOAD
 // =======================
 window.addEventListener("DOMContentLoaded", () => {
 
   const loginPage = document.getElementById("loginPage");
   const appDiv = document.getElementById("app");
-  const messagesBox = document.getElementById("messages");
-
-  const emailInput = document.getElementById("email");
-  const passwordInput = document.getElementById("password");
-  const messageInput = document.getElementById("messageInput");
+  const messages = document.getElementById("messages");
+  const input = document.getElementById("messageInput");
+  const typingBox = document.getElementById("typing");
 
   // =======================
   // AUTH
   // =======================
-  window.login = async () => {
-    try {
-      await signInWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
-    } catch (e) {
-      alert(e.message);
-    }
-  };
+  window.login = () =>
+    signInWithEmailAndPassword(auth, email.value, password.value);
 
-  window.signup = async () => {
-    try {
-      await createUserWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
-    } catch (e) {
-      alert(e.message);
-    }
-  };
+  window.signup = () =>
+    createUserWithEmailAndPassword(auth, email.value, password.value);
 
   window.logout = () => signOut(auth);
+
+  // =======================
+  // ENCRYPT (simple)
+  // =======================
+  const enc = t => btoa(unescape(encodeURIComponent(t)));
+  const dec = t => decodeURIComponent(escape(atob(t)));
 
   // =======================
   // SEND MESSAGE
   // =======================
   window.sendMessage = async () => {
-    const text = messageInput.value.trim();
-    if (!text || !auth.currentUser) return;
+    if (!input.value) return;
 
     await addDoc(collection(db, "messages"), {
-      text,
+      text: enc(input.value),
       uid: auth.currentUser.uid,
-      createdAt: serverTimestamp()
+      createdAt: serverTimestamp(),
+      status: "sent"
     });
 
-    messageInput.value = "";
+    input.value = "";
+    stopTyping();
   };
 
   // =======================
-  // REAL-TIME CHAT
+  // REAL TIME CHAT
   // =======================
   const q = query(collection(db, "messages"), orderBy("createdAt"));
 
-  onSnapshot(q, (snap) => {
-    messagesBox.innerHTML = "";
+  onSnapshot(q, snap => {
+    messages.innerHTML = "";
 
-    snap.forEach((d) => {
+    snap.forEach(d => {
       const m = d.data();
       if (!m.text) return;
 
-      const isMe = auth.currentUser && m.uid === auth.currentUser.uid;
+      const isMe = m.uid === auth.currentUser?.uid;
 
       const row = document.createElement("div");
       row.className = "msg-row";
@@ -103,25 +100,74 @@ window.addEventListener("DOMContentLoaded", () => {
 
       const bubble = document.createElement("div");
       bubble.className = isMe ? "my-message" : "their-message";
-      bubble.textContent = m.text;
 
+      const text = document.createElement("div");
+      text.textContent = dec(m.text);
+
+      const meta = document.createElement("div");
+      meta.className = "meta";
+      meta.textContent = m.status;
+
+      bubble.appendChild(text);
+      bubble.appendChild(meta);
       row.appendChild(bubble);
-      messagesBox.appendChild(row);
+      messages.appendChild(row);
     });
 
-    messagesBox.scrollTop = messagesBox.scrollHeight;
+    messages.scrollTop = messages.scrollHeight;
   });
+
+  // =======================
+  // TYPING
+  // =======================
+  let typingTimer;
+
+  window.typing = async () => {
+    if (!auth.currentUser) return;
+
+    await setDoc(doc(db, "typing", "global"), {
+      uid: auth.currentUser.uid,
+      typing: true
+    });
+
+    clearTimeout(typingTimer);
+    typingTimer = setTimeout(stopTyping, 1000);
+  };
+
+  function stopTyping() {
+    setDoc(doc(db, "typing", "global"), {
+      uid: "",
+      typing: false
+    });
+  }
+
+  // typing listener
+  onSnapshot(doc(db, "typing", "global"), snap => {
+    const d = snap.data();
+
+    if (!d?.typing || d.uid === auth.currentUser?.uid) {
+      typingBox.classList.add("hidden");
+    } else {
+      typingBox.classList.remove("hidden");
+    }
+  });
+
+  // =======================
+  // COLOR PICKER (PINK INCLUDED)
+  // =======================
+  window.pickColor = () => {
+    const c = prompt("Pick color (try pink):");
+    if (!c) return;
+    document.documentElement.style.setProperty("--bubble", c);
+  };
 
   // =======================
   // AUTH STATE
   // =======================
-  onAuthStateChanged(auth, (user) => {
+  onAuthStateChanged(auth, user => {
     if (user) {
       loginPage.style.display = "none";
       appDiv.style.display = "block";
-    } else {
-      loginPage.style.display = "flex";
-      appDiv.style.display = "none";
     }
   });
 
