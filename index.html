@@ -6,24 +6,21 @@
 <title>FRAGGO</title>
 <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<!-- LOGIN -->
-window.login = () => {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+<!-- LOGIN SCREEN -->
+<div id="loginPage" class="login">
+  <div class="box">
+    <h2>Login</h2>
 
-  signInWithEmailAndPassword(auth, email, password)
-    .catch(err => alert(err.message));
-};
+    <input id="email" placeholder="Email">
+    <input id="password" type="password" placeholder="Password">
 
-window.signup = () => {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-
-  createUserWithEmailAndPassword(auth, email, password)
-    .catch(err => alert(err.message));
-};
+    <button onclick="login()">Login</button>
+    <button onclick="signup()">Sign Up</button>
+  </div>
+</div>
 
 <!-- APP -->
 <div id="app" style="display:none;">
@@ -42,6 +39,7 @@ window.signup = () => {
     <!-- CHAT -->
     <div id="messagesPage" class="page">
       <div id="messages" class="chat"></div>
+
       <div class="input">
         <input id="messageInput" placeholder="Message...">
         <button onclick="sendMessage()">➤</button>
@@ -67,7 +65,7 @@ window.signup = () => {
       </div>
     </div>
 
-    <!-- BOTTOM TABS -->
+    <!-- TABS -->
     <div class="tabs">
       <button onclick="showTab('messages')">💬</button>
       <button onclick="showTab('list')">📝</button>
@@ -77,6 +75,8 @@ window.signup = () => {
   </div>
 </div>
 
+<!-- JS FILE -->
 <script type="module" src="app.js"></script>
+
 </body>
 </html>
