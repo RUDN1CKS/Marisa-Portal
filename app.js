@@ -14,20 +14,23 @@ import {
   query,
   orderBy,
   onSnapshot,
-  serverTimestamp
+  serverTimestamp,
+  doc,
+  setDoc,
+  onSnapshot as docListen
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 
 // =======================
-// 🔥 FIREBASE CONFIG
+// FIREBASE CONFIG
 // =======================
 const firebaseConfig = {
-  apiKey: "PUT_YOURS",
-  authDomain: "PUT_YOURS",
-  projectId: "PUT_YOURS",
-  storageBucket: "PUT_YOURS",
-  messagingSenderId: "PUT_YOURS",
-  appId: "PUT_YOURS"
+  apiKey: "PUT",
+  authDomain: "PUT",
+  projectId: "PUT",
+  storageBucket: "PUT",
+  messagingSenderId: "PUT",
+  appId: "PUT"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -41,7 +44,7 @@ window.login = () => {
   signInWithEmailAndPassword(auth, email.value, password.value)
     .then(() => {
       loginPage.style.display = "none";
-      appDiv.style.display = "block";
+      app.style.display = "block";
     });
 };
 
@@ -52,98 +55,115 @@ window.signup = () => {
 window.logout = () => signOut(auth);
 
 // =======================
-// CHAT
-// =======================
-const chatBox = document.getElementById("messages");
+// ENCRYPTION (light)
+function enc(t){return btoa(unescape(encodeURIComponent(t)))}
+function dec(t){try{return decodeURIComponent(escape(atob(t)))}catch{return t}}
 
+// =======================
+// SEND MESSAGE
+// =======================
 window.sendMessage = async () => {
   const text = messageInput.value.trim();
   if (!text) return;
 
   await addDoc(collection(db, "messages"), {
-    text,
+    text: enc(text),
     uid: auth.currentUser.uid,
+    createdAt: serverTimestamp(),
     status: "sent",
-    createdAt: serverTimestamp()
+    reaction: ""
   });
 
   messageInput.value = "";
+  sendStopTyping();
 };
 
 // =======================
-// REAL-TIME LISTENER
+// CHAT STREAM
 // =======================
 const q = query(collection(db, "messages"), orderBy("createdAt"));
 
 onSnapshot(q, (snap) => {
-  chatBox.innerHTML = "";
+  messages.innerHTML = "";
 
-  snap.forEach((doc) => {
-    const m = doc.data();
+  snap.forEach((d) => {
+    const m = d.data();
+    const isMe = m.uid === auth.currentUser?.uid;
 
     const row = document.createElement("div");
     row.className = "msg-row";
-    row.style.justifyContent =
-      m.uid === auth.currentUser.uid ? "flex-end" : "flex-start";
+    row.style.justifyContent = isMe ? "flex-end" : "flex-start";
 
     const bubble = document.createElement("div");
-    bubble.className =
-      m.uid === auth.currentUser.uid ? "my-message" : "their-message";
+    bubble.className = isMe ? "my-message" : "their-message";
 
     const text = document.createElement("div");
-    text.textContent = m.text;
+    text.textContent = dec(m.text);
 
     const meta = document.createElement("div");
     meta.className = "meta";
     meta.textContent = m.status;
 
+    const react = document.createElement("div");
+    react.textContent = m.reaction || "";
+
     bubble.appendChild(text);
     bubble.appendChild(meta);
+    bubble.appendChild(react);
+
     row.appendChild(bubble);
-    chatBox.appendChild(row);
+    messages.appendChild(row);
   });
 
-  chatBox.scrollTop = chatBox.scrollHeight;
+  messages.scrollTop = messages.scrollHeight;
 });
 
 // =======================
-// TYPING INDICATOR (simple v1)
+// TYPING (REAL TIME FIRESTORE)
 // =======================
-window.startTyping = () => {
-  const t = document.getElementById("typing");
+window.sendTyping = async () => {
+  if (!auth.currentUser) return;
 
-  t.classList.remove("hidden");
-
-  clearTimeout(window.typingTimer);
-  window.typingTimer = setTimeout(() => {
-    t.classList.add("hidden");
-  }, 1200);
+  await setDoc(doc(db, "typing", "global"), {
+    uid: auth.currentUser.uid,
+    typing: true
+  });
 };
+
+function sendStopTyping(){
+  setDoc(doc(db, "typing", "global"), {
+    uid: "",
+    typing: false
+  });
+}
+
+docListen(doc(db, "typing", "global"), (snap) => {
+  const data = snap.data();
+  if (!data?.typing) {
+    typing.classList.add("hidden");
+    return;
+  }
+
+  if (data.uid !== auth.currentUser?.uid) {
+    typing.classList.remove("hidden");
+  }
+});
 
 // =======================
 // COLOR
 // =======================
 window.pickColor = () => {
-  const c = prompt("Pick color:");
-  if (!c) return;
-
+  const c = prompt("Color:");
   localStorage.setItem("bubble", c);
   document.documentElement.style.setProperty("--bubble-color", c);
 };
 
-window.refreshApp = () => location.reload();
-
 // =======================
 // AUTH STATE
 // =======================
-onAuthStateChanged(auth, (user) => {
-  if (user) {
+onAuthStateChanged(auth, (u) => {
+  if (u) {
     loginPage.style.display = "none";
-    appDiv.style.display = "block";
+    app.style.display = "block";
   }
 });
-
-// =======================
-// INPUT LISTENER
-// =======================
-messageInput?.addEventListener("input", startTyping);hApp;
