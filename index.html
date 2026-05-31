@@ -1,184 +1,129 @@
-/* GLOBAL */
-body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial;
-    background: radial-gradient(circle at top, #0b0b12, #050507);
-    color: #eaeaea;
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marisa Portal ❤️</title>
+<link rel="stylesheet" href="style.css">
+</head>
 
-/* APP LAYOUT */
-.app {
-    display: flex;
-    height: 100vh;
-}
+<body>
 
-/* SIDEBAR */
-.sidebar {
-    width: 240px;
-    background: rgba(20, 20, 30, 0.6);
-    backdrop-filter: blur(15px);
-    border-right: 1px solid rgba(255,255,255,0.08);
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
+<div class="app">
 
-/* PROFILE */
-.profile {
-    text-align: center;
-    margin-bottom: 20px;
-}
+    <!-- SIDEBAR -->
+    <div class="sidebar">
 
-.logo {
-    width: 60px;
-    height: 60px;
-    margin: 0 auto;
-    border-radius: 18px;
-    background: linear-gradient(135deg, #ff4d6d, #4da3ff);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    color: white;
-    box-shadow: 0 0 20px rgba(255, 77, 109, 0.4);
-}
+        <div class="profile">
+            <div class="logo">MP</div>
+            <div class="name">Marisa Portal</div>
+            <div class="status">secure space • just us ❤️</div>
+        </div>
 
-.name {
-    margin-top: 10px;
-    font-weight: bold;
-}
+        <div>
+            <button onclick="showTab('home')">🏠 Home</button>
+            <button onclick="showTab('chat')">💬 Chat</button>
+            <button onclick="showTab('todo')">📝 To-Do</button>
+            <button onclick="showTab('ai')">🤖 Malana</button>
+            <button onclick="showTab('games')">🎮 Games</button>
+        </div>
 
-.status {
-    font-size: 12px;
-    color: #888;
-}
+        <div class="footer">
+            built with love ❤️
+        </div>
 
-/* BUTTONS */
-.sidebar button {
-    width: 100%;
-    margin-top: 10px;
-    padding: 12px;
-    border: none;
-    border-radius: 12px;
-    background: rgba(255,255,255,0.05);
-    color: white;
-    cursor: pointer;
-    transition: 0.2s;
-}
+    </div>
 
-.sidebar button:hover {
-    background: rgba(77, 163, 255, 0.3);
-    transform: translateX(3px);
-}
+    <!-- MAIN CONTENT -->
+    <div class="main">
 
-/* FOOTER */
-.footer {
-    font-size: 12px;
-    text-align: center;
-    color: #666;
-}
+        <!-- HOME -->
+        <div id="home" class="tab active">
 
-/* MAIN */
-.main {
-    flex: 1;
-    padding: 25px;
-    overflow-y: auto;
-}
+            <div class="hero">
+                <h1>Hey ❤️</h1>
+                <p>This is our private space — chat, plans, games, and Malana.</p>
+            </div>
 
-/* HERO */
-.hero {
-    padding: 20px;
-    border-radius: 18px;
-    background: linear-gradient(135deg, rgba(255,77,109,0.15), rgba(77,163,255,0.1));
-    border: 1px solid rgba(255,255,255,0.08);
-    margin-bottom: 20px;
-}
+            <div class="grid">
 
-/* GRID */
-.grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
-}
+                <div class="card">
+                    <h3>💬 Chat</h3>
+                    <p>Talk anytime, simple and fast.</p>
+                </div>
 
-/* CARDS */
-.card {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.08);
-    padding: 15px;
-    border-radius: 16px;
-    backdrop-filter: blur(10px);
-    transition: 0.2s;
-}
+                <div class="card">
+                    <h3>📝 To-Do</h3>
+                    <p>Stay aligned on everything together.</p>
+                </div>
 
-.card:hover {
-    transform: scale(1.02);
-    border-color: rgba(77,163,255,0.4);
-}
+                <div class="card">
+                    <h3>🤖 Malana</h3>
+                    <p>Your AI helper for life + ideas.</p>
+                </div>
 
-/* TABS */
-.tab {
-    display: none;
-}
+                <div class="card">
+                    <h3>🎮 Games</h3>
+                    <p>Have fun together anytime.</p>
+                </div>
 
-.tab.active {
-    display: block;
-}
+            </div>
 
-/* CHAT + AI BOX */
-.box {
-    height: 320px;
-    overflow-y: auto;
-    background: rgba(0,0,0,0.25);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 14px;
-    padding: 10px;
-    margin-bottom: 10px;
-}
+        </div>
 
-/* INPUT ROW */
-.row {
-    display: flex;
-    gap: 10px;
-}
+        <!-- CHAT -->
+        <div id="chat" class="tab">
+            <h1>💬 Chat</h1>
 
-input {
-    flex: 1;
-    padding: 12px;
-    border-radius: 12px;
-    border: 1px solid rgba(255,255,255,0.1);
-    background: rgba(255,255,255,0.05);
-    color: white;
-    outline: none;
-}
+            <div id="chatBox" class="box"></div>
 
-button {
-    padding: 12px 14px;
-    border: none;
-    border-radius: 12px;
-    background: linear-gradient(135deg, #ff4d6d, #4da3ff);
-    color: white;
-    cursor: pointer;
-    transition: 0.2s;
-}
+            <div class="row">
+                <input id="chatInput" placeholder="Type something...">
+                <button onclick="sendMessage()">Send</button>
+            </div>
+        </div>
 
-button:hover {
-    opacity: 0.9;
-    transform: scale(1.03);
-}
+        <!-- TODO -->
+        <div id="todo" class="tab">
+            <h1>📝 To-Do</h1>
 
-/* TEXT */
-h1 {
-    margin-top: 0;
-}
+            <div class="row">
+                <input id="todoInput" placeholder="Add a task...">
+                <button onclick="addTask()">Add</button>
+            </div>
 
-.subtext {
-    color: #aaa;
-    margin-bottom: 15px;
-}
+            <ul id="todoList"></ul>
+        </div>
 
-/* LIST */
-ul {
-    padding-left: 20px;
-}
+        <!-- AI -->
+        <div id="ai" class="tab">
+            <h1>🤖 Malana</h1>
+
+            <p class="subtext">Your calm AI assistant for planning and ideas ❤️</p>
+
+            <div id="aiBox" class="box"></div>
+
+            <div class="row">
+                <input id="aiInput" placeholder="Ask Malana anything...">
+                <button onclick="askAI()">Ask</button>
+            </div>
+        </div>
+
+        <!-- GAMES -->
+        <div id="games" class="tab">
+            <h1>🎮 Games</h1>
+
+            <div class="card">
+                <h3>Coming Soon ❤️</h3>
+                <p>Tic Tac Toe, Connect 4, and more.</p>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<script src="app.js"></script>
+
+</body>
+</html>
