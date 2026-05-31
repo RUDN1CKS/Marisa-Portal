@@ -1,202 +1,147 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  onAuthStateChanged,
-  signOut
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+// =======================
+// FRAGGO APP CORE
+// =======================
 
-import {
-  getFirestore,
-  collection,
-  addDoc,
-  onSnapshot,
-  query,
-  orderBy
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+// ---------- AUTH (placeholders if you're using Firebase later) ----------
+function login() {
+  document.getElementById("loginPage").style.display = "none";
+  document.getElementById("app").style.display = "block";
+}
 
-// ================= FIREBASE CONFIG =================
-const firebaseConfig = {
-  apiKey: "AIzaSyDpI19Vv9zdNjAYPp97Y12T6A8kot3GbmA",
-  authDomain: "marisa-portal.firebaseapp.com",
-  projectId: "marisa-portal",
-  storageBucket: "marisa-portal.firebasestorage.app",
-  messagingSenderId: "977842432790",
-  appId: "1:977842432790:web:4a05992c796cfdb392fe37"
-};
+function signup() {
+  alert("Hook this into Firebase signup later");
+}
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+function logout() {
+  document.getElementById("loginPage").style.display = "flex";
+  document.getElementById("app").style.display = "none";
+}
 
-// ================= STATE =================
-let currentUser = null;
+// ---------- PAGE SWITCH ----------
+function showPage(page) {
+  document.querySelectorAll(".page").forEach(p => p.classList.add("hidden"));
 
-// ================= AUTH STATE =================
-onAuthStateChanged(auth, (user) => {
-  const loginPage = document.getElementById("loginPage");
-  const appPage = document.getElementById("app");
+  if (page === "chat") document.getElementById("chatPage").classList.remove("hidden");
+  if (page === "todo") document.getElementById("todoPage").classList.remove("hidden");
+  if (page === "malana") document.getElementById("malanaPage").classList.remove("hidden");
+  if (page === "games") document.getElementById("gamesPage").classList.remove("hidden");
+}
 
-  if (!loginPage || !appPage) return;
+// ---------- CHAT SYSTEM ----------
+let messages = [];
 
-  if (user) {
-    currentUser = user;
-    loginPage.style.display = "none";
-    appPage.style.display = "block";
-  } else {
-    currentUser = null;
-    loginPage.style.display = "flex";
-    appPage.style.display = "none";
-  }
-});
-
-// ================= AUTH FUNCTIONS =================
-window.signup = () => {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-
-  createUserWithEmailAndPassword(auth, email, password)
-    .catch(err => alert("SIGNUP ERROR: " + err.message));
-};
-
-window.login = () => {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-
-  signInWithEmailAndPassword(auth, email, password)
-    .catch(err => alert("LOGIN ERROR: " + err.message));
-};
-
-window.logout = () => {
-  signOut(auth);
-};
-
-window.refreshApp = () => {
-  location.reload();
-};
-
-// ================= NAVIGATION =================
-window.showPage = (page) => {
-  ["chatPage", "todoPage", "malanaPage", "gamesPage"].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.classList.add("hidden");
-  });
-
-  const target = document.getElementById(page + "Page");
-  if (target) target.classList.remove("hidden");
-};
-
-// ================= CHAT =================
-const chatRef = collection(db, "messages");
-
-window.sendMessage = () => {
+function sendMessage() {
   const input = document.getElementById("messageInput");
-  if (!input.value.trim()) return;
+  const text = input.value.trim();
+  if (!text) return;
 
-  addDoc(chatRef, {
-    text: input.value,
-    sender: currentUser?.email || "unknown",
+  const msg = {
+    text,
+    sender: "me",
     time: Date.now()
+  };
+
+  messages.push(msg);
+  renderMessages();
+  input.value = "";
+}
+
+function renderMessages() {
+  const box = document.getElementById("messages");
+  box.innerHTML = "";
+
+  messages.forEach(m => {
+    const div = document.createElement("div");
+    div.className = m.sender === "me" ? "my-message" : "their-message";
+    div.textContent = m.text;
+    box.appendChild(div);
   });
 
-  input.value = "";
-};
+  scrollToBottom();
+}
 
-// Render chat
-onSnapshot(query(chatRef, orderBy("time", "asc")), (snap) => {
+function scrollToBottom() {
   const box = document.getElementById("messages");
   if (!box) return;
 
-  box.innerHTML = "";
-
-  snap.forEach(doc => {
-    const data = doc.data();
-
-    const isYou = currentUser && data.sender === currentUser.email;
-
-    const div = document.createElement("div");
-
-    div.style.maxWidth = "75%";
-    div.style.margin = "6px";
-    div.style.padding = "10px";
-    div.style.borderRadius = "12px";
-    div.style.color = "white";
-    div.style.alignSelf = isYou ? "flex-end" : "flex-start";
-    div.style.background = isYou ? "#3a86ff" : "#2a2f36";
-
-    const time = new Date(data.time).toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit"
-    });
-
-    div.innerHTML = `
-      ${data.text}
-      <div style="font-size:10px;opacity:0.6;margin-top:5px;">
-        ${time}
-      </div>
-    `;
-
-    box.appendChild(div);
+  box.scrollTo({
+    top: box.scrollHeight,
+    behavior: "smooth"
   });
+}
+
+// ---------- BUBBLE COLOR PICKER ----------
+function pickColor() {
+  const color = prompt("Pick bubble color (pink, #ff69b4, lightblue, etc):");
+  if (!color) return;
+
+  localStorage.setItem("bubbleColor", color);
+  applyBubbleColor(color);
+}
+
+function applyBubbleColor(color) {
+  document.documentElement.style.setProperty("--bubble-color", color);
+}
+
+// load saved bubble color
+window.addEventListener("load", () => {
+  const saved = localStorage.getItem("bubbleColor");
+  if (saved) applyBubbleColor(saved);
+
+  showPage("chat");
 });
 
-// ================= TODO =================
-const todoRef = collection(db, "todos");
-
-window.addTask = () => {
+// ---------- TODO SYSTEM ----------
+function addTask() {
   const input = document.getElementById("todoInput");
-  if (!input.value.trim()) return;
+  const value = input.value.trim();
+  if (!value) return;
 
-  addDoc(todoRef, {
-    text: input.value,
-    time: Date.now()
-  });
+  const li = document.createElement("li");
+  li.textContent = value;
 
+  li.onclick = () => li.remove();
+
+  document.getElementById("todoList").appendChild(li);
   input.value = "";
-};
+}
 
-onSnapshot(query(todoRef, orderBy("time", "asc")), (snap) => {
-  const list = document.getElementById("todoList");
-  if (!list) return;
-
-  list.innerHTML = "";
-
-  snap.forEach(d => {
-    const li = document.createElement("li");
-    li.textContent = d.data().text;
-    list.appendChild(li);
-  });
-});
-
-// ================= MALANA =================
-window.askMalana = () => {
+// ---------- MALANA (placeholder AI) ----------
+function askMalana() {
   const input = document.getElementById("aiInput");
-  if (!input.value.trim()) return;
+  const text = input.value.trim();
+  if (!text) return;
 
   const box = document.getElementById("aiMessages");
 
-  box.innerHTML += `<div class="message">${input.value}</div>`;
+  const userMsg = document.createElement("div");
+  userMsg.textContent = "You: " + text;
+  box.appendChild(userMsg);
 
-  const replies = [
-    "I hear you ❤️",
-    "Got you.",
-    "Keep going ❤️"
-  ];
-
-  box.innerHTML += `<div class="message">
-    ${replies[Math.floor(Math.random() * replies.length)]}
-  </div>`;
+  const botMsg = document.createElement("div");
+  botMsg.textContent = "Malana: I’m not fully connected yet 🤖";
+  box.appendChild(botMsg);
 
   input.value = "";
-};
+}
 
-// ================= GAME =================
-let current = "X";
+// ---------- TIC TAC TOE ----------
+let currentPlayer = "X";
 
-window.move = (cell) => {
-  if (cell.textContent) return;
+function move(btn) {
+  if (btn.textContent) return;
 
-  cell.textContent = current;
-  current = current === "X" ? "O" : "X";
-};
+  btn.textContent = currentPlayer;
+  currentPlayer = currentPlayer === "X" ? "O" : "X";
+}
+
+// ---------- GLOBAL EXPORTS (IMPORTANT for HTML onclick) ----------
+window.login = login;
+window.signup = signup;
+window.logout = logout;
+window.showPage = showPage;
+window.sendMessage = sendMessage;
+window.addTask = addTask;
+window.askMalana = askMalana;
+window.move = move;
+window.pickColor = pickColor;
