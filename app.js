@@ -1,8 +1,8 @@
 // =======================
-// FRAGGO APP CORE
+// FRAGGO APP CORE (FIXED)
 // =======================
 
-// ---------- AUTH (placeholders if you're using Firebase later) ----------
+// ---------- AUTH ----------
 function login() {
   document.getElementById("loginPage").style.display = "none";
   document.getElementById("app").style.display = "block";
@@ -25,9 +25,11 @@ function showPage(page) {
   if (page === "todo") document.getElementById("todoPage").classList.remove("hidden");
   if (page === "malana") document.getElementById("malanaPage").classList.remove("hidden");
   if (page === "games") document.getElementById("gamesPage").classList.remove("hidden");
+
+  setTimeout(scrollToBottom, 50);
 }
 
-// ---------- CHAT SYSTEM ----------
+// ---------- CHAT ----------
 let messages = [];
 
 function sendMessage() {
@@ -35,19 +37,20 @@ function sendMessage() {
   const text = input.value.trim();
   if (!text) return;
 
-  const msg = {
+  messages.push({
     text,
     sender: "me",
     time: Date.now()
-  };
+  });
 
-  messages.push(msg);
-  renderMessages();
   input.value = "";
+  renderMessages();
 }
 
 function renderMessages() {
   const box = document.getElementById("messages");
+  if (!box) return;
+
   box.innerHTML = "";
 
   messages.forEach(m => {
@@ -70,7 +73,7 @@ function scrollToBottom() {
   });
 }
 
-// ---------- BUBBLE COLOR PICKER ----------
+// ---------- BUBBLE COLOR ----------
 function pickColor() {
   const color = prompt("Pick bubble color (pink, #ff69b4, lightblue, etc):");
   if (!color) return;
@@ -83,15 +86,20 @@ function applyBubbleColor(color) {
   document.documentElement.style.setProperty("--bubble-color", color);
 }
 
-// load saved bubble color
-window.addEventListener("load", () => {
-  const saved = localStorage.getItem("bubbleColor");
-  if (saved) applyBubbleColor(saved);
+// ---------- RELOAD FIX (THIS WAS MISSING) ----------
+function refreshApp() {
+  applySavedSettings();
+  renderMessages();
+  scrollToBottom();
+}
 
-  showPage("chat");
-});
+// ---------- SETTINGS LOAD ----------
+function applySavedSettings() {
+  const savedColor = localStorage.getItem("bubbleColor");
+  if (savedColor) applyBubbleColor(savedColor);
+}
 
-// ---------- TODO SYSTEM ----------
+// ---------- TODO ----------
 function addTask() {
   const input = document.getElementById("todoInput");
   const value = input.value.trim();
@@ -99,14 +107,13 @@ function addTask() {
 
   const li = document.createElement("li");
   li.textContent = value;
-
   li.onclick = () => li.remove();
 
   document.getElementById("todoList").appendChild(li);
   input.value = "";
 }
 
-// ---------- MALANA (placeholder AI) ----------
+// ---------- MALANA ----------
 function askMalana() {
   const input = document.getElementById("aiInput");
   const text = input.value.trim();
@@ -114,13 +121,14 @@ function askMalana() {
 
   const box = document.getElementById("aiMessages");
 
-  const userMsg = document.createElement("div");
-  userMsg.textContent = "You: " + text;
-  box.appendChild(userMsg);
+  const u = document.createElement("div");
+  u.textContent = "You: " + text;
 
-  const botMsg = document.createElement("div");
-  botMsg.textContent = "Malana: I’m not fully connected yet 🤖";
-  box.appendChild(botMsg);
+  const b = document.createElement("div");
+  b.textContent = "Malana: still offline mode 🤖";
+
+  box.appendChild(u);
+  box.appendChild(b);
 
   input.value = "";
 }
@@ -135,7 +143,15 @@ function move(btn) {
   currentPlayer = currentPlayer === "X" ? "O" : "X";
 }
 
-// ---------- GLOBAL EXPORTS (IMPORTANT for HTML onclick) ----------
+// ---------- INIT ----------
+window.addEventListener("load", () => {
+  applySavedSettings();
+  showPage("chat");
+  renderMessages();
+  scrollToBottom();
+});
+
+// ---------- EXPORTS ----------
 window.login = login;
 window.signup = signup;
 window.logout = logout;
@@ -145,3 +161,4 @@ window.addTask = addTask;
 window.askMalana = askMalana;
 window.move = move;
 window.pickColor = pickColor;
+window.refreshApp = refreshApp;
