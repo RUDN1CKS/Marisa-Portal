@@ -5,7 +5,9 @@ collection,
 addDoc,
 onSnapshot,
 query,
-orderBy
+orderBy,
+doc,
+updateDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 import {
@@ -15,6 +17,7 @@ signInWithEmailAndPassword,
 onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
+// ================= FIREBASE =================
 const firebaseConfig = {
 apiKey: "AIzaSyDpI19Vv9zdNjAYPp97Y12T6A8kot3GbmA",
 authDomain: "marisa-portal.firebaseapp.com",
@@ -28,11 +31,20 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// LOGIN STATE
+// ================= USERS =================
+let currentUser = null;
+
+const WIFE_EMAIL = "mnrudnick4@gmail.com";
+
+// ================= LOGIN =================
 onAuthStateChanged(auth, (user) => {
 if (user) {
+currentUser = user;
+
 document.getElementById("loginPage").style.display = "none";
 document.getElementById("app").style.display = "block";
+
+markSeenMessages(); // read receipts
 } else {
 document.getElementById("loginPage").style.display = "flex";
 document.getElementById("app").style.display = "none";
@@ -55,18 +67,16 @@ document.getElementById("password").value
 ).catch(e => alert(e.message));
 };
 
-// NAV
+// ================= NAV =================
 window.showPage = (page) => {
 ["chatPage","todoPage","malanaPage","gamesPage"].forEach(id=>{
-const el = document.getElementById(id);
-if (el) el.classList.add("hidden");
+document.getElementById(id).classList.add("hidden");
 });
 
-const target = document.getElementById(page + "Page");
-if (target) target.classList.remove("hidden");
+document.getElementById(page + "Page").classList.remove("hidden");
 };
 
-// CHAT
+// ================= CHAT =================
 const chatRef = collection(db, "messages");
 
 window.sendMessage = () => {
@@ -75,32 +85,67 @@ if (!input.value.trim()) return;
 
 addDoc(chatRef, {
 text: input.value,
-time: Date.now()
+sender: currentUser.email,
+time: Date.now(),
+seenBy: []
 });
 
 input.value = "";
 };
 
+// ================= READ RECEIPTS =================
+async function markSeenMessages(){
+const snap = await new Promise(resolve => {
+onSnapshot(query(chatRef, orderBy("time","asc")), resolve);
+});
+
+snap.forEach(async (docSnap) => {
+const data = docSnap.data();
+
+if (!data.seenBy) return;
+
+if (!data.seenBy.includes(currentUser.email)) {
+await updateDoc(doc(db, "messages", docSnap.id), {
+seenBy: [...(data.seenBy || []), currentUser.email]
+});
+}
+});
+}
+
+// ================= RENDER CHAT =================
 onSnapshot(query(chatRef, orderBy("time","asc")), (snap) => {
 
 const box = document.getElementById("messages");
 box.innerHTML = "";
 
-snap.forEach(doc => {
+snap.forEach(docSnap => {
+
+const data = docSnap.data();
+
+const isYou = data.sender === currentUser?.email;
+const isWife = data.sender === WIFE_EMAIL;
+
+let color = "#2a2f36"; // default gray
+
+if (isWife) color = "#ff4fa3"; // PINK (wife)
+if (isYou) color = "#3a86ff"; // BLUE (you)
+
+const seen = data.seenBy?.length > 1 ? "Seen 👀" : "";
+
 const div = document.createElement("div");
-div.className = "message";
 
-const data = doc.data();
-
-const time = new Date(data.time).toLocaleTimeString([], {
-hour:"2-digit",
-minute:"2-digit"
-});
+div.style.maxWidth = "75%";
+div.style.margin = "6px";
+div.style.padding = "10px";
+div.style.borderRadius = "15px";
+div.style.color = "white";
+div.style.alignSelf = isYou ? "flex-end" : "flex-start";
+div.style.background = color;
 
 div.innerHTML = `
-${data.text}
-<div style="font-size:10px;opacity:0.6;margin-top:5px;">
-${time}
+${data.text || ""}
+<div style="font-size:10px;opacity:0.7;margin-top:5px;">
+${seen}
 </div>
 `;
 
@@ -109,7 +154,7 @@ box.appendChild(div);
 
 });
 
-// TODO
+// ================= TODO =================
 const todoRef = collection(db,"todos");
 
 window.addTask = () => {
@@ -134,23 +179,27 @@ list.appendChild(li);
 });
 });
 
-// MALANA
+// ================= MALANA =================
 window.askMalana = () => {
 const input=document.getElementById("aiInput");
 if(!input.value.trim()) return;
 
 const box=document.getElementById("aiMessages");
 
-box.innerHTML+=`<div class="message">${input.value}</div>`;
+box.innerHTML+=`
+<div class="message">${input.value}</div>
+`;
 
-const replies=["I hear you ❤️","Got you.","Keep going ❤️"];
-
-box.innerHTML+=`<div class="message">${replies[Math.floor(Math.random()*replies.length)]}</div>`;
+box.innerHTML+=`
+<div class="message">
+${["I hear you ❤️","Got you.","Keep going ❤️"][Math.floor(Math.random()*3)]}
+</div>
+`;
 
 input.value="";
 };
 
-// GAME
+// ================= GAME =================
 let current="X";
 
 window.move=(cell)=>{
