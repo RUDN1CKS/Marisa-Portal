@@ -43,9 +43,12 @@ const appDiv = document.getElementById("app");
 const chat = document.getElementById("messages");
 const input = document.getElementById("messageInput");
 input?.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") {
-    sendMessage();
+input?.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    if (input.value.trim()) sendMessage();
   }
+});
 });
   
 /* AUTH */
@@ -93,13 +96,10 @@ onAuthStateChanged(auth, user => {
     return;
   }
 
-  const q = query(
-    collection(db, "messages"),
 const q = query(
   collection(db, "messages"),
   orderBy("createdAt", "asc")
 );
-  );
 
   if (unsubscribeMessages) unsubscribeMessages();
 
