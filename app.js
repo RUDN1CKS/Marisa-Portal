@@ -52,7 +52,7 @@ window.logout = () => signOut(auth);
 
 window.refresh = () => location.reload();
 
-/* SEND */
+/* SEND MESSAGE */
 window.sendMessage = async () => {
   if (!input.value.trim()) return;
 
@@ -66,7 +66,7 @@ window.sendMessage = async () => {
   input.value = "";
 };
 
-/* LIVE CHAT */
+/* CHAT LIVE */
 const q = query(collection(db, "messages"), orderBy("createdAt"));
 
 onSnapshot(q, snap => {
@@ -76,7 +76,7 @@ onSnapshot(q, snap => {
     const m = d.data();
     const id = d.id;
 
-    const isMe = m.uid === auth.currentUser?.uid;
+    const isMe = auth.currentUser?.uid === m.uid;
 
     const row = document.createElement("div");
     row.className = "row";
@@ -118,11 +118,11 @@ onSnapshot(q, snap => {
 
 /* COLOR */
 window.pickColor = () => {
-  const c = prompt("Color:");
+  const c = prompt("Pick color:");
   if (c) document.documentElement.style.setProperty("--bubble", c);
 };
 
-/* TABS */
+/* TAB SYSTEM */
 window.showTab = (tab) => {
   document.getElementById("messagesPage").classList.add("hidden");
   document.getElementById("listPage").classList.add("hidden");
@@ -133,19 +133,47 @@ window.showTab = (tab) => {
 
 window.showTab("messages");
 
-/* TODO */
+/* NOTES */
 window.addTask = () => {
-  const t = document.getElementById("todoInput");
+  const input = document.getElementById("todoInput");
   const list = document.getElementById("todoList");
-  if (!t.value) return;
+
+  if (!input.value.trim()) return;
 
   const li = document.createElement("li");
-  li.textContent = t.value;
+  li.textContent = input.value;
   li.onclick = () => li.remove();
-  list.appendChild(li);
 
-  t.value = "";
+  list.appendChild(li);
+  input.value = "";
 };
+
+/* TIC TAC TOE */
+let turn = "X";
+
+function buildBoard() {
+  const board = document.getElementById("board");
+  board.innerHTML = "";
+
+  for (let i = 0; i < 9; i++) {
+    const btn = document.createElement("button");
+
+    btn.addEventListener("click", () => {
+      if (btn.textContent) return;
+      btn.textContent = turn;
+      turn = turn === "X" ? "O" : "X";
+    });
+
+    board.appendChild(btn);
+  }
+}
+
+window.resetGame = () => {
+  turn = "X";
+  buildBoard();
+};
+
+window.addEventListener("DOMContentLoaded", buildBoard);
 
 /* AUTH STATE */
 onAuthStateChanged(auth, user => {
