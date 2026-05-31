@@ -1,14 +1,76 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Marisa Portal</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 
-<body style="background:black; color:white; font-family:Arial;">
+<body>
 
-    <h1>Marisa Portal ❤️</h1>
+<div class="app">
 
-    <p>Your site is now live. Next step: full app build.</p>
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <h2>MP</h2>
+
+        <button onclick="showTab('home')">🏠 Home</button>
+        <button onclick="showTab('chat')">💬 Chat</button>
+        <button onclick="showTab('todo')">📝 To-Do</button>
+        <button onclick="showTab('ai')">🤖 Malana</button>
+        <button onclick="showTab('games')">🎮 Games</button>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main">
+
+        <div id="home" class="tab active">
+            <h1>Welcome ❤️</h1>
+            <div class="card">
+                Your private portal is now live. Next we add real features.
+            </div>
+        </div>
+
+        <div id="chat" class="tab">
+            <h1>Chat</h1>
+            <div id="chatBox" class="box"></div>
+            <div class="row">
+                <input id="chatInput" placeholder="Message...">
+                <button onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+
+        <div id="todo" class="tab">
+            <h1>To-Do</h1>
+            <div class="row">
+                <input id="todoInput" placeholder="New task...">
+                <button onclick="addTask()">Add</button>
+            </div>
+            <ul id="todoList"></ul>
+        </div>
+
+        <div id="ai" class="tab">
+            <h1>Malana AI</h1>
+            <div id="aiBox" class="box"></div>
+            <div class="row">
+                <input id="aiInput" placeholder="Ask Malana...">
+                <button onclick="askAI()">Ask</button>
+            </div>
+        </div>
+
+        <div id="games" class="tab">
+            <h1>Games</h1>
+            <div class="card">
+                More games coming next step 🎮
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<script src="app.js"></script>
 
 </body>
 </html>
