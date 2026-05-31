@@ -27,9 +27,7 @@
 <!-- CHAT -->
 <div id="chatPage" class="page">
 
-<div id="messages" class="messages">
-<div class="message received">Hey babe ❤️</div>
-</div>
+<div id="messages" class="messages"></div>
 
 <div class="input-area">
 <input id="messageInput" placeholder="Message Marisa...">
@@ -44,7 +42,6 @@
 <h2>📝 Shared To-Do</h2>
 
 <input id="todoInput" class="todo-input" placeholder="Add a task...">
-
 <button class="todo-btn" onclick="addTask()">Add Task</button>
 
 <ul id="todoList"></ul>
@@ -56,9 +53,7 @@
 
 <h2>🤖 Malana</h2>
 
-<div id="aiMessages" class="messages">
-<div class="message received">Hi ❤️ I'm Malana.</div>
-</div>
+<div id="aiMessages" class="messages"></div>
 
 <div class="input-area">
 <input id="aiInput" placeholder="Ask Malana...">
@@ -100,7 +95,8 @@
 
 </div>
 
-<script src="app.js"></script>
+<!-- IMPORTANT: MODULE SCRIPT -->
+<script type="module" src="app.js"></script>
 
 </body>
 </html>
