@@ -76,6 +76,7 @@ window.refresh = () => location.reload();
 /* SEND MESSAGE */
 window.sendMessage = async () => {
   if (!input.value.trim()) return;
+  if (!auth.currentUser) return;
 
   await addDoc(collection(db, "messages"), {
     text: input.value,
@@ -121,11 +122,12 @@ const q = query(
     const text = document.createElement("div");
     text.textContent = m.text;
 
-    const time = document.createElement("div");
-    time.className = "meta";
+const time = document.createElement("div");
+time.className = "meta";
 
 if (m.createdAt?.seconds) {
   const d = m.createdAt.seconds * 1000;
+
   time.textContent = new Date(d).toLocaleString([], {
     month: "short",
     day: "numeric",
@@ -135,14 +137,6 @@ if (m.createdAt?.seconds) {
 } else {
   time.textContent = "";
 }
-      time.textContent = new Date(m.createdAt.seconds * 1000)
-.toLocaleString([], {
-  month: 'short',
-  day: 'numeric',
-  hour: 'numeric',
-  minute: '2-digit'
-});
-    }
 
     const status = document.createElement("div");
     status.className = "meta";
