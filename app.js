@@ -1,3 +1,43 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {
+getFirestore,
+collection,
+addDoc,
+onSnapshot,
+query,
+orderBy
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+apiKey: "AIzaSyDpI19Vv9zdNjAYPp97Y12T6A8kot3GbmA",
+authDomain: "marisa-portal.firebaseapp.com",
+projectId: "marisa-portal",
+storageBucket: "marisa-portal.firebasestorage.app",
+messagingSenderId: "977842432790",
+appId: "1:977842432790:web:4a05992c796cfdb392fe37"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// =======================
+// TIME
+// =======================
+
+function getTime(){
+const now = new Date();
+let h = now.getHours();
+let m = now.getMinutes();
+let ampm = h >= 12 ? "PM" : "AM";
+h = h % 12 || 12;
+m = m < 10 ? "0" + m : m;
+return `${h}:${m} ${ampm}`;
+}
+
+// =======================
+// PAGE SWITCH
+// =======================
+
 function showPage(page){
 
 document.getElementById("chatPage").classList.add("hidden");
@@ -11,133 +51,143 @@ document.getElementById(page + "Page").classList.remove("hidden");
 
 window.showPage = showPage;
 
-
 // =======================
-// CHAT
+// CHAT (REAL TIME)
 // =======================
 
-function getTimeStamp(){
+const chatRef = collection(db, "messages");
 
-const now = new Date();
-
-let hours = now.getHours();
-let minutes = now.getMinutes();
-
-let ampm = hours >= 12 ? "PM" : "AM";
-
-hours = hours % 12;
-hours = hours ? hours : 12;
-
-minutes = minutes < 10 ? "0" + minutes : minutes;
-
-return `${hours}:${minutes} ${ampm}`;
-
-}
-
-function sendMessage(){
+async function sendMessage(){
 
 const input = document.getElementById("messageInput");
+const text = input.value.trim();
 
-if(!input.value.trim()) return;
+if(!text) return;
 
-const msg = document.createElement("div");
-msg.className = "message sent";
-
-msg.innerHTML = `
-${input.value}
-<div style="font-size:10px;opacity:0.6;margin-top:5px;">
-${getTimeStamp()}
-</div>
-`;
-
-document.getElementById("messages").appendChild(msg);
+await addDoc(chatRef, {
+text,
+time: Date.now()
+});
 
 input.value = "";
-
 }
 
 window.sendMessage = sendMessage;
 
+const chatQuery = query(chatRef, orderBy("time", "asc"));
 
-// =======================
-// TODO
-// =======================
+onSnapshot(chatQuery, (snapshot) => {
 
-function addTask(){
+const box = document.getElementById("messages");
+box.innerHTML = "";
 
-const input = document.getElementById("todoInput");
+snapshot.forEach(doc => {
 
-if(!input.value.trim()) return;
+const data = doc.data();
 
-const li = document.createElement("li");
+const div = document.createElement("div");
+div.className = "message sent";
 
-li.innerHTML = `
-${input.value}
-<span style="font-size:10px;opacity:0.6;margin-left:8px;">
-${getTimeStamp()}
-</span>
+div.innerHTML = `
+${data.text}
+<div style="font-size:10px;opacity:0.6;margin-top:5px;">
+${getTime()}
+</div>
 `;
 
-document.getElementById("todoList").appendChild(li);
+box.appendChild(div);
+
+});
+
+});
+
+// =======================
+// TODO (REAL TIME)
+// =======================
+
+const todoRef = collection(db, "todos");
+
+async function addTask(){
+
+const input = document.getElementById("todoInput");
+const text = input.value.trim();
+
+if(!text) return;
+
+await addDoc(todoRef, {
+text,
+time: Date.now()
+});
 
 input.value = "";
-
 }
 
 window.addTask = addTask;
 
+const todoQuery = query(todoRef, orderBy("time", "asc"));
+
+onSnapshot(todoQuery, (snapshot) => {
+
+const list = document.getElementById("todoList");
+list.innerHTML = "";
+
+snapshot.forEach(doc => {
+
+const li = document.createElement("li");
+
+li.innerHTML = `
+${doc.data().text}
+<span style="font-size:10px;opacity:0.6;margin-left:8px;">
+${getTime()}
+</span>
+`;
+
+list.appendChild(li);
+
+});
+
+});
 
 // =======================
-// MALANA
+// MALANA (LOCAL AI)
 // =======================
 
 function askMalana(){
 
 const input = document.getElementById("aiInput");
+const text = input.value.trim();
 
-if(!input.value.trim()) return;
+if(!text) return;
 
 const box = document.getElementById("aiMessages");
-
-const user = document.createElement("div");
-user.className = "message sent";
-
-user.innerHTML = `
-${input.value}
-<div style="font-size:10px;opacity:0.6;margin-top:5px;">
-${getTimeStamp()}
-</div>
-`;
-
-box.appendChild(user);
 
 const replies = [
 "I’m listening ❤️",
 "That makes sense.",
-"You’re doing great.",
 "You’ve got this.",
-"Tell Marisa that ❤️",
-"I’m here with you."
+"Talk to Marisa ❤️",
+"I’m here with you.",
+"Keep going."
 ];
 
-const ai = document.createElement("div");
-ai.className = "message received";
-
-ai.innerHTML = `
-${replies[Math.floor(Math.random()*replies.length)]}
-<div style="font-size:10px;opacity:0.6;margin-top:5px;">
-${getTimeStamp()}
+box.innerHTML += `
+<div class="message sent">
+${text}<br>
+<small>${getTime()}</small>
 </div>
 `;
 
-box.appendChild(ai);
+box.innerHTML += `
+<div class="message received">
+${replies[Math.floor(Math.random()*replies.length)]}<br>
+<small>${getTime()}</small>
+</div>
+`;
 
 input.value = "";
-
 }
 
 window.askMalana = askMalana;
-
 
 // =======================
 // TIC TAC TOE
