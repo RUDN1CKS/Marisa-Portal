@@ -1,11 +1,16 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
-  getAuth,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  onAuthStateChanged,
-  signOut
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  getFirestore,
+  collection,
+  addDoc,
+  query,
+  orderBy,
+  onSnapshot,
+  serverTimestamp,
+  doc,
+  updateDoc,
+  arrayUnion,
+  deleteDoc
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 import {
   getFirestore,
@@ -133,20 +138,46 @@ window.showTab = (tab) => {
 
 window.showTab("messages");
 
-/* NOTES */
-window.addTask = () => {
+/* NOTES - FIREBASE */
+
+window.addTask = async () => {
   const input = document.getElementById("todoInput");
-  const list = document.getElementById("todoList");
 
   if (!input.value.trim()) return;
 
-  const li = document.createElement("li");
-  li.textContent = input.value;
-  li.onclick = () => li.remove();
+  await addDoc(collection(db, "notes"), {
+    text: input.value,
+    createdAt: serverTimestamp()
+  });
 
-  list.appendChild(li);
   input.value = "";
 };
+
+const notesQuery = query(
+  collection(db, "notes"),
+  orderBy("createdAt")
+);
+
+onSnapshot(notesQuery, (snapshot) => {
+  const list = document.getElementById("todoList");
+
+  if (!list) return;
+
+  list.innerHTML = "";
+
+  snapshot.forEach((noteDoc) => {
+    const note = noteDoc.data();
+
+    const li = document.createElement("li");
+    li.textContent = note.text;
+
+    li.onclick = async () => {
+      await deleteDoc(doc(db, "notes", noteDoc.id));
+    };
+
+    list.appendChild(li);
+  });
+});
 
 /* TIC TAC TOE */
 let turn = "X";
