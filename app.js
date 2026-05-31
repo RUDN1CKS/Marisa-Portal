@@ -80,9 +80,19 @@ window.sendMessage = async () => {
 };
 
 /* CHAT LIVE */
-const q = query(collection(db, "messages"), orderBy("createdAt"));
+let unsubscribeMessages = null;
 
-onSnapshot(q, snap => {
+onAuthStateChanged(auth, user => {
+  if (!user) return;
+
+  const q = query(
+    collection(db, "messages"),
+    orderBy("createdAt")
+  );
+
+  if (unsubscribeMessages) unsubscribeMessages();
+
+  unsubscribeMessages = onSnapshot(q, snap => {
   chat.innerHTML = "";
 
   snap.forEach(d => {
@@ -130,9 +140,19 @@ onSnapshot(q, snap => {
 });
 
 /* COLOR */
+const savedColor = localStorage.getItem("bubbleColor");
+
+if (savedColor) {
+  document.documentElement.style.setProperty("--bubble", savedColor);
+}
+
 window.pickColor = () => {
-  const c = prompt("Pick color:");
-  if (c) document.documentElement.style.setProperty("--bubble", c);
+  const c = prompt("Pick a color (pink, blue, purple, #ff69b4, etc):");
+
+  if (!c) return;
+
+  document.documentElement.style.setProperty("--bubble", c);
+  localStorage.setItem("bubbleColor", c);
 };
 
 /* TAB SYSTEM */
