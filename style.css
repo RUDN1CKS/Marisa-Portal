@@ -2,27 +2,26 @@
 margin:0;
 padding:0;
 box-sizing:border-box;
-font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+font-family:system-ui;
 }
 
 body{
 background:#0f0f10;
+color:white;
 display:flex;
 justify-content:center;
 align-items:center;
 height:100vh;
-color:white;
 }
 
 .phone{
 width:390px;
 height:844px;
 background:#16181d;
-border-radius:35px;
 display:flex;
 flex-direction:column;
+border-radius:25px;
 overflow:hidden;
-box-shadow:0 0 40px rgba(255,105,180,.15);
 }
 
 .header{
@@ -30,49 +29,26 @@ display:flex;
 align-items:center;
 padding:15px;
 background:#1d2026;
-border-bottom:1px solid #2c3138;
 }
 
 .avatar{
-width:50px;
-height:50px;
+width:45px;
+height:45px;
 border-radius:50%;
-background:linear-gradient(45deg,#ff4d6d,#ff8fa3);
+background:#ff4d6d;
 display:flex;
-justify-content:center;
 align-items:center;
-font-size:24px;
-margin-right:12px;
-}
-
-.header-info h2{
-font-size:18px;
-}
-
-.header-info p{
-font-size:12px;
-color:#8aff80;
-}
-
-.malana-btn{
-margin-left:auto;
-border:none;
-background:#3a86ff;
-color:white;
-padding:10px 14px;
-border-radius:15px;
-cursor:pointer;
+justify-content:center;
+margin-right:10px;
 }
 
 .page{
 flex:1;
-padding:15px;
+padding:10px;
 overflow-y:auto;
 }
 
-.hidden{
-display:none;
-}
+.hidden{display:none;}
 
 .messages{
 display:flex;
@@ -81,15 +57,9 @@ gap:10px;
 }
 
 .message{
-padding:12px 16px;
-border-radius:20px;
-max-width:75%;
-word-wrap:break-word;
-}
-
-.received{
-background:#2a2f36;
-align-self:flex-start;
+padding:10px;
+border-radius:15px;
+max-width:70%;
 }
 
 .sent{
@@ -97,85 +67,76 @@ background:#3a86ff;
 align-self:flex-end;
 }
 
+.received{
+background:#2a2f36;
+align-self:flex-start;
+}
+
 .input-area{
 display:flex;
-gap:10px;
+gap:5px;
 margin-top:10px;
 }
 
 .input-area input{
 flex:1;
-padding:12px;
-border:none;
-border-radius:20px;
-background:#2a2f36;
-color:white;
-}
-
-.input-area button{
-width:45px;
-border:none;
-border-radius:50%;
-background:#3a86ff;
-color:white;
-font-size:18px;
-}
-
-.todo-input{
-width:100%;
-padding:12px;
-border:none;
-border-radius:15px;
-margin-top:10px;
-background:#2a2f36;
-color:white;
-}
-
-.todo-btn{
-margin-top:10px;
 padding:10px;
-background:#3a86ff;
 border:none;
-color:white;
 border-radius:10px;
-cursor:pointer;
-}
-
-#todoList{
-margin-top:15px;
-padding-left:20px;
-}
-
-.game-board{
-margin-top:20px;
-display:grid;
-grid-template-columns:repeat(3,90px);
-gap:10px;
-justify-content:center;
-}
-
-.game-board button{
-height:90px;
-font-size:32px;
-border:none;
-border-radius:15px;
 background:#2a2f36;
 color:white;
 }
 
 .bottom{
-height:70px;
-background:#1d2026;
 display:flex;
 justify-content:space-around;
-align-items:center;
-border-top:1px solid #2c3138;
+padding:10px;
+background:#1d2026;
 }
 
 .bottom button{
 background:none;
 border:none;
-font-size:22px;
 color:white;
-cursor:pointer;
+font-size:18px;
+}
+
+/* LOGIN */
+.login-screen{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:#0f0f10;
+display:flex;
+align-items:center;
+justify-content:center;
+z-index:999;
+}
+
+.login-box{
+background:#1d2026;
+padding:20px;
+border-radius:15px;
+display:flex;
+flex-direction:column;
+gap:10px;
+width:280px;
+}
+
+.login-box input{
+padding:10px;
+border:none;
+border-radius:10px;
+background:#2a2f36;
+color:white;
+}
+
+.login-box button{
+padding:10px;
+border:none;
+border-radius:10px;
+background:#3a86ff;
+color:white;
 }
