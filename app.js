@@ -188,10 +188,14 @@ onSnapshot(notesQuery, (snapshot) => {
 });
 
 /* TIC TAC TOE */
+
 let turn = "X";
 
 function buildBoard() {
   const board = document.getElementById("board");
+
+  if (!board) return;
+
   board.innerHTML = "";
 
   for (let i = 0; i < 9; i++) {
@@ -199,6 +203,7 @@ function buildBoard() {
 
     btn.addEventListener("click", () => {
       if (btn.textContent) return;
+
       btn.textContent = turn;
       turn = turn === "X" ? "O" : "X";
     });
@@ -212,7 +217,7 @@ window.resetGame = () => {
   buildBoard();
 };
 
-  buildBoard();
+buildBoard();
 
 /* AUTH STATE */
 onAuthStateChanged(auth, user => {
