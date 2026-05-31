@@ -212,7 +212,7 @@ window.resetGame = () => {
   buildBoard();
 };
 
-window.addEventListener("DOMContentLoaded", buildBoard);
+  buildBoard();
 
 /* AUTH STATE */
 onAuthStateChanged(auth, user => {
