@@ -141,7 +141,9 @@ onAuthStateChanged(auth, user => {
     chat.appendChild(row);
   });
 
+setTimeout(() => {
   chat.scrollTop = chat.scrollHeight;
+}, 50);
 });
   }); // closes unsubscribeMessages callback
 
