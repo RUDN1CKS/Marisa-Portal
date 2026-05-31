@@ -2,7 +2,7 @@
 margin:0;
 padding:0;
 box-sizing:border-box;
-font-family:-apple-system,BlinkMacSystemFont,‘Segoe UI’,sans-serif;
+font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
 }
 
 body{
@@ -19,18 +19,17 @@ width:390px;
 height:844px;
 background:#16181d;
 border-radius:35px;
-overflow:hidden;
 display:flex;
 flex-direction:column;
+overflow:hidden;
 box-shadow:0 0 40px rgba(255,105,180,.15);
 }
 
 .header{
-height:80px;
-background:#1d2026;
 display:flex;
 align-items:center;
 padding:15px;
+background:#1d2026;
 border-bottom:1px solid #2c3138;
 }
 
@@ -40,8 +39,8 @@ height:50px;
 border-radius:50%;
 background:linear-gradient(45deg,#ff4d6d,#ff8fa3);
 display:flex;
-align-items:center;
 justify-content:center;
+align-items:center;
 font-size:24px;
 margin-right:12px;
 }
@@ -62,14 +61,13 @@ background:#3a86ff;
 color:white;
 padding:10px 14px;
 border-radius:15px;
-font-size:18px;
 cursor:pointer;
 }
 
 .page{
 flex:1;
-overflow-y:auto;
 padding:15px;
+overflow-y:auto;
 }
 
 .hidden{
@@ -95,62 +93,57 @@ align-self:flex-start;
 }
 
 .sent{
-background:linear-gradient(45deg,#3a86ff,#6aa7ff);
+background:#3a86ff;
 align-self:flex-end;
 }
 
 .input-area{
 display:flex;
 gap:10px;
-padding-top:15px;
+margin-top:10px;
 }
 
 .input-area input{
 flex:1;
-padding:14px;
+padding:12px;
 border:none;
-border-radius:25px;
+border-radius:20px;
 background:#2a2f36;
 color:white;
 }
 
 .input-area button{
-width:50px;
+width:45px;
 border:none;
 border-radius:50%;
 background:#3a86ff;
 color:white;
 font-size:18px;
-cursor:pointer;
 }
 
 .todo-input{
 width:100%;
-padding:14px;
+padding:12px;
 border:none;
 border-radius:15px;
+margin-top:10px;
 background:#2a2f36;
 color:white;
-margin-top:15px;
 }
 
 .todo-btn{
 margin-top:10px;
-padding:12px;
-border:none;
-border-radius:12px;
+padding:10px;
 background:#3a86ff;
+border:none;
 color:white;
+border-radius:10px;
 cursor:pointer;
 }
 
 #todoList{
 margin-top:15px;
 padding-left:20px;
-}
-
-#todoList li{
-margin-bottom:10px;
 }
 
 .game-board{
@@ -168,7 +161,6 @@ border:none;
 border-radius:15px;
 background:#2a2f36;
 color:white;
-cursor:pointer;
 }
 
 .bottom{
@@ -183,7 +175,7 @@ border-top:1px solid #2c3138;
 .bottom button{
 background:none;
 border:none;
-font-size:24px;
+font-size:22px;
 color:white;
 cursor:pointer;
 }
