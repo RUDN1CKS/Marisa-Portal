@@ -24,18 +24,16 @@
     <div class="topbar">
       <div>💬 FRAGGO</div>
       <div>
-        <button onclick="refresh()">🔄</button>
         <button onclick="pickColor()">🎨</button>
+        <button onclick="refresh()">🔄</button>
         <button onclick="logout()">⎋</button>
       </div>
     </div>
 
     <div id="messages" class="chat"></div>
 
-    <div id="typing" class="typing hidden">typing...</div>
-
     <div class="input">
-      <input id="messageInput" placeholder="Message..." oninput="typing()">
+      <input id="messageInput" placeholder="Message...">
       <button onclick="sendMessage()">➤</button>
     </div>
 
