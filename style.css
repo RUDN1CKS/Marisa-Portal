@@ -35,6 +35,12 @@ body {
   color: white;
 }
 
+.page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
 .chat {
   flex: 1;
   overflow-y: auto;
@@ -51,7 +57,7 @@ body {
 
 .me {
   margin-left: auto;
-  background: var(--bubble, #0a84ff);
+  background: var(--bubble,#0a84ff);
   color: white;
   padding: 10px 12px;
   border-radius: 18px 18px 6px 18px;
@@ -86,45 +92,32 @@ body {
   border: none;
 }
 
-.page {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-/* HIDE PAGES */
 .hidden {
   display: none;
 }
 
-/* LIST */
-#listPage {
+.tabs {
+  display: flex;
+  justify-content: space-around;
   padding: 10px;
+  background: #111;
+  color: white;
 }
 
-/* GAME GRID */
+.tabs button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 18px;
+}
+
 .grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3,1fr);
   gap: 6px;
   padding: 10px;
 }
 
 .grid button {
   height: 80px;
-}
-
-/* BOTTOM TABS */
-.tabs {
-  display: flex;
-  justify-content: space-around;
-  padding: 10px;
-  background: #111;
-}
-
-.tabs button {
-  color: white;
-  font-size: 18px;
-  background: none;
-  border: none;
 }
