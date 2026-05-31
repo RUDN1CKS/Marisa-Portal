@@ -115,7 +115,12 @@ onAuthStateChanged(auth, user => {
 
     if (m.createdAt?.seconds) {
       time.textContent = new Date(m.createdAt.seconds * 1000)
-        .toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+.toLocaleString([], {
+  month: 'short',
+  day: 'numeric',
+  hour: 'numeric',
+  minute: '2-digit'
+});
     }
 
     const status = document.createElement("div");
@@ -138,6 +143,7 @@ onAuthStateChanged(auth, user => {
 
   chat.scrollTop = chat.scrollHeight;
 });
+  }); // closes unsubscribeMessages callback
 
 /* COLOR */
 const savedColor = localStorage.getItem("bubbleColor");
