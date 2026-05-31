@@ -5,9 +5,7 @@ collection,
 addDoc,
 onSnapshot,
 query,
-orderBy,
-doc,
-updateDoc
+orderBy
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 import {
@@ -31,62 +29,46 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// ================= STATE =================
 let currentUser = null;
 
-const WIFE_EMAIL = "mnrudnick4@gmail.com";
-
-// ================= AUTH STATE =================
+// ================= AUTH =================
 onAuthStateChanged(auth, (user) => {
-const loginPage = document.getElementById("loginPage");
-const appPage = document.getElementById("app");
+const login = document.getElementById("loginPage");
+const appDiv = document.getElementById("app");
 
-if (!loginPage || !appPage) return;
+if (!login || !appDiv) return;
 
 if (user) {
 currentUser = user;
-
-loginPage.style.display = "none";
-appPage.style.display = "block";
-
-console.log("Logged in as:", user.email);
+login.style.display = "none";
+appDiv.style.display = "block";
 } else {
 currentUser = null;
-
-loginPage.style.display = "flex";
-appPage.style.display = "none";
+login.style.display = "flex";
+appDiv.style.display = "none";
 }
 });
 
-// ================= AUTH ACTIONS =================
-window.signup = () => {
-const email = document.getElementById("email")?.value;
-const password = document.getElementById("password")?.value;
-
-if (!email || !password) return alert("Enter email + password");
-
-createUserWithEmailAndPassword(auth, email, password)
-.catch(e => alert("SIGNUP ERROR: " + e.message));
-};
-
+// ================= LOGIN =================
 window.login = () => {
-const email = document.getElementById("email")?.value;
-const password = document.getElementById("password")?.value;
-
-if (!email || !password) return alert("Enter email + password");
-
-signInWithEmailAndPassword(auth, email, password)
-.catch(e => alert("LOGIN ERROR: " + e.message));
+signInWithEmailAndPassword(
+auth,
+document.getElementById("email").value,
+document.getElementById("password").value
+).catch(e => alert(e.message));
 };
 
-window.logout = () => {
-auth.signOut()
-.catch(e => alert(e.message));
+window.signup = () => {
+createUserWithEmailAndPassword(
+auth,
+document.getElementById("email").value,
+document.getElementById("password").value
+).catch(e => alert(e.message));
 };
 
-window.refreshApp = () => {
-location.reload();
-};
+window.logout = () => auth.signOut();
+
+window.refreshApp = () => location.reload();
 
 // ================= NAV =================
 window.showPage = (page) => {
@@ -102,19 +84,17 @@ const chatRef = collection(db, "messages");
 
 window.sendMessage = () => {
 const input = document.getElementById("messageInput");
-if (!input?.value.trim()) return;
+if (!input.value.trim()) return;
 
 addDoc(chatRef, {
 text: input.value,
 sender: currentUser?.email || "unknown",
-time: Date.now(),
-seenBy: []
+time: Date.now()
 });
 
 input.value = "";
 };
 
-// ================= CHAT RENDER =================
 onSnapshot(query(chatRef, orderBy("time","asc")), (snap) => {
 
 const box = document.getElementById("messages");
@@ -122,41 +102,23 @@ if (!box) return;
 
 box.innerHTML = "";
 
-snap.forEach(docSnap => {
+snap.forEach(doc => {
 
-const data = docSnap.data();
+const data = doc.data();
 
-const sender = data.sender || "";
-
-const isYou = currentUser && sender === currentUser.email;
-const isWife = sender === WIFE_EMAIL;
-
-let bg = "#2a2f36";
-
-if (isYou) bg = "#3a86ff";
-if (isWife) bg = "#ff4fa3";
+const isYou = currentUser && data.sender === currentUser.email;
 
 const div = document.createElement("div");
 
-div.style.maxWidth = "75%";
-div.style.margin = "6px";
-div.style.padding = "10px";
-div.style.borderRadius = "15px";
-div.style.color = "white";
+div.className = "message";
 div.style.alignSelf = isYou ? "flex-end" : "flex-start";
-div.style.background = bg;
-
-const time = new Date(data.time).toLocaleTimeString([], {
-hour:"2-digit",
-minute:"2-digit"
-});
-
-const seen = data.seenBy?.length > 1 ? "Seen 👀" : "";
+div.style.background = isYou ? "#3a86ff" : "#2a2f36";
+div.style.color = "white";
 
 div.innerHTML = `
-${data.text || ""}
+${data.text}
 <div style="font-size:10px;opacity:0.6;margin-top:5px;">
-${time} ${seen}
+${new Date(data.time).toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})}
 </div>
 `;
 
@@ -171,7 +133,7 @@ const todoRef = collection(db,"todos");
 
 window.addTask = () => {
 const input = document.getElementById("todoInput");
-if (!input?.value.trim()) return;
+if (!input.value.trim()) return;
 
 addDoc(todoRef,{
 text:input.value,
@@ -197,22 +159,15 @@ list.appendChild(li);
 // ================= MALANA =================
 window.askMalana = () => {
 const input=document.getElementById("aiInput");
-if(!input?.value.trim()) return;
+if(!input.value.trim()) return;
 
 const box=document.getElementById("aiMessages");
-if (!box) return;
 
 box.innerHTML += `<div class="message">${input.value}</div>`;
 
-const replies = [
-"I hear you ❤️",
-"Got you.",
-"Keep going ❤️"
-];
+const replies=["I hear you ❤️","Got you.","Keep going ❤️"];
 
-box.innerHTML += `<div class="message">
-${replies[Math.floor(Math.random()*replies.length)]}
-</div>`;
+box.innerHTML += `<div class="message">${replies[Math.floor(Math.random()*3)]}</div>`;
 
 input.value="";
 };
@@ -221,8 +176,7 @@ input.value="";
 let current="X";
 
 window.move=(cell)=>{
-if(!cell || cell.textContent) return;
-
+if(cell.textContent) return;
 cell.textContent=current;
 current=current==="X"?"O":"X";
 };
