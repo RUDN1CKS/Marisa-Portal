@@ -1,173 +1,149 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  query,
+  orderBy,
+  onSnapshot,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+
 // =======================
-// FRAGGO - FINAL CHAT CORE
+// 🔥 FIREBASE CONFIG
 // =======================
+const firebaseConfig = {
+  apiKey: "PUT_YOURS",
+  authDomain: "PUT_YOURS",
+  projectId: "PUT_YOURS",
+  storageBucket: "PUT_YOURS",
+  messagingSenderId: "PUT_YOURS",
+  appId: "PUT_YOURS"
+};
 
-// ---------- AUTH ----------
-function login() {
-  document.getElementById("loginPage").style.display = "none";
-  document.getElementById("app").style.display = "block";
-}
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-function signup() {
-  alert("Connect Firebase later");
-}
+// =======================
+// AUTH
+// =======================
+window.login = () => {
+  signInWithEmailAndPassword(auth, email.value, password.value)
+    .then(() => {
+      loginPage.style.display = "none";
+      appDiv.style.display = "block";
+    });
+};
 
-function logout() {
-  document.getElementById("loginPage").style.display = "flex";
-  document.getElementById("app").style.display = "none";
-}
+window.signup = () => {
+  createUserWithEmailAndPassword(auth, email.value, password.value);
+};
 
-// ---------- PAGE ----------
-function showPage(page) {
-  document.querySelectorAll(".page").forEach(p => p.classList.add("hidden"));
-  document.getElementById(page + "Page").classList.remove("hidden");
-  setTimeout(scrollToBottom, 50);
-}
+window.logout = () => signOut(auth);
 
-// ---------- CHAT STORAGE (SYNC FIX) ----------
-let messages = JSON.parse(localStorage.getItem("fraggo_msgs") || "[]");
+// =======================
+// CHAT
+// =======================
+const chatBox = document.getElementById("messages");
 
-// ---------- SEND ----------
-function sendMessage() {
-  const input = document.getElementById("messageInput");
-  const text = input.value.trim();
+window.sendMessage = async () => {
+  const text = messageInput.value.trim();
   if (!text) return;
 
-  messages.push({
+  await addDoc(collection(db, "messages"), {
     text,
-    sender: "me",
-    time: Date.now()
+    uid: auth.currentUser.uid,
+    status: "sent",
+    createdAt: serverTimestamp()
   });
 
-  save();
-  input.value = "";
-  render();
-}
+  messageInput.value = "";
+};
 
-// ---------- SAVE ----------
-function save() {
-  localStorage.setItem("fraggo_msgs", JSON.stringify(messages));
-}
+// =======================
+// REAL-TIME LISTENER
+// =======================
+const q = query(collection(db, "messages"), orderBy("createdAt"));
 
-// ---------- TIME ----------
-function time(t) {
-  return new Date(t).toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit"
-  });
-}
+onSnapshot(q, (snap) => {
+  chatBox.innerHTML = "";
 
-// ---------- RENDER ----------
-function render() {
-  const box = document.getElementById("messages");
-  box.innerHTML = "";
+  snap.forEach((doc) => {
+    const m = doc.data();
 
-  messages.forEach(m => {
     const row = document.createElement("div");
     row.className = "msg-row";
-    row.style.justifyContent = m.sender === "me" ? "flex-end" : "flex-start";
+    row.style.justifyContent =
+      m.uid === auth.currentUser.uid ? "flex-end" : "flex-start";
 
     const bubble = document.createElement("div");
-    bubble.className = m.sender === "me" ? "my-message" : "their-message";
+    bubble.className =
+      m.uid === auth.currentUser.uid ? "my-message" : "their-message";
 
     const text = document.createElement("div");
     text.textContent = m.text;
 
-    const ts = document.createElement("div");
-    ts.textContent = time(m.time);
-    ts.style.fontSize = "10px";
-    ts.style.opacity = "0.6";
-    ts.style.marginTop = "4px";
+    const meta = document.createElement("div");
+    meta.className = "meta";
+    meta.textContent = m.status;
 
     bubble.appendChild(text);
-    bubble.appendChild(ts);
-
+    bubble.appendChild(meta);
     row.appendChild(bubble);
-    box.appendChild(row);
+    chatBox.appendChild(row);
   });
 
-  scrollToBottom();
-}
-
-// ---------- SCROLL ----------
-function scrollToBottom() {
-  const box = document.getElementById("messages");
-  if (!box) return;
-
-  box.scrollTo({
-    top: box.scrollHeight,
-    behavior: "smooth"
-  });
-}
-
-// ---------- COLOR ----------
-function pickColor() {
-  const c = prompt("Pick bubble color (pink, #ff69b4, etc)");
-  if (!c) return;
-
-  localStorage.setItem("bubbleColor", c);
-  applyColor(c);
-}
-
-function applyColor(c) {
-  document.documentElement.style.setProperty("--bubble-color", c);
-}
-
-// ---------- REFRESH ----------
-function refreshApp() {
-  messages = JSON.parse(localStorage.getItem("fraggo_msgs") || "[]");
-  applySaved();
-  render();
-}
-
-// ---------- SETTINGS ----------
-function applySaved() {
-  const c = localStorage.getItem("bubbleColor");
-  if (c) applyColor(c);
-}
-
-// ---------- TODO ----------
-function addTask() {
-  const input = document.getElementById("todoInput");
-  const v = input.value.trim();
-  if (!v) return;
-
-  const li = document.createElement("li");
-  li.textContent = v;
-  li.onclick = () => li.remove();
-
-  document.getElementById("todoList").appendChild(li);
-  input.value = "";
-}
-
-// ---------- MALANA ----------
-function askMalana() {
-  const input = document.getElementById("aiInput");
-  const text = input.value.trim();
-  if (!text) return;
-
-  const box = document.getElementById("aiMessages");
-
-  box.innerHTML += `<div>You: ${text}</div>`;
-  box.innerHTML += `<div>Malana: offline 🤖</div>`;
-
-  input.value = "";
-}
-
-// ---------- INIT ----------
-window.addEventListener("load", () => {
-  applySaved();
-  render();
-  showPage("chat");
+  chatBox.scrollTop = chatBox.scrollHeight;
 });
 
-// ---------- EXPORTS ----------
-window.login = login;
-window.signup = signup;
-window.logout = logout;
-window.showPage = showPage;
-window.sendMessage = sendMessage;
-window.addTask = addTask;
-window.askMalana = askMalana;
-window.pickColor = pickColor;
-window.refreshApp = refreshApp;
+// =======================
+// TYPING INDICATOR (simple v1)
+// =======================
+window.startTyping = () => {
+  const t = document.getElementById("typing");
+
+  t.classList.remove("hidden");
+
+  clearTimeout(window.typingTimer);
+  window.typingTimer = setTimeout(() => {
+    t.classList.add("hidden");
+  }, 1200);
+};
+
+// =======================
+// COLOR
+// =======================
+window.pickColor = () => {
+  const c = prompt("Pick color:");
+  if (!c) return;
+
+  localStorage.setItem("bubble", c);
+  document.documentElement.style.setProperty("--bubble-color", c);
+};
+
+window.refreshApp = () => location.reload();
+
+// =======================
+// AUTH STATE
+// =======================
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    loginPage.style.display = "none";
+    appDiv.style.display = "block";
+  }
+});
+
+// =======================
+// INPUT LISTENER
+// =======================
+messageInput?.addEventListener("input", startTyping);hApp;
