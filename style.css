@@ -4,7 +4,6 @@ body {
   background: #111;
 }
 
-/* login */
 .login-screen {
   display: flex;
   height: 100vh;
@@ -22,34 +21,25 @@ body {
   border-radius: 10px;
 }
 
-/* phone */
 .phone {
   height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
-/* header */
 .header {
   display: flex;
-  align-items: center;
   padding: 10px;
   background: #1c1c1e;
   color: white;
 }
 
-/* pages */
 .page {
   flex: 1;
   display: flex;
   flex-direction: column;
 }
 
-.hidden {
-  display: none;
-}
-
-/* CHAT AREA */
 .messages {
   flex: 1;
   overflow-y: auto;
@@ -59,53 +49,48 @@ body {
   flex-direction: column;
 }
 
-/* ROW wrapper (IMPORTANT FIX) */
 .msg-row {
   width: 100%;
   display: flex;
-  margin: 5px 0;
+  margin: 6px 0;
 }
 
-/* BUBBLES */
 .my-message,
 .their-message {
-  padding: 10px 14px;
+  padding: 10px 12px;
   border-radius: 18px;
   max-width: 70%;
-  word-wrap: break-word;
-  display: inline-block;
+  word-break: break-word;
 }
 
-/* right side */
 .my-message {
   background: var(--bubble-color, #4f7cff);
   color: white;
   border-bottom-right-radius: 4px;
 }
 
-/* left side */
 .their-message {
   background: #e5e5ea;
   color: black;
   border-bottom-left-radius: 4px;
 }
 
-/* input */
+.meta {
+  font-size: 10px;
+  opacity: 0.6;
+  margin-top: 4px;
+}
+
 .input-area {
   display: flex;
   padding: 10px;
   background: #1c1c1e;
 }
 
-.input-area input {
-  flex: 1;
-  padding: 10px;
-}
+.hidden { display:none; }
 
-.topbtn {
-  background: #333;
-  color: white;
-  border: none;
-  padding: 6px 10px;
-  border-radius: 6px;
+.typing {
+  font-size: 12px;
+  padding: 5px 10px;
+  color: gray;
 }
