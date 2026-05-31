@@ -6,107 +6,88 @@
 <title>FRAGGO</title>
 <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-
-<!-- LOGIN -->
+<!-- LOGIN SCREEN -->
 <div id="loginPage" class="login-screen">
   <div class="login-box">
     <h1>FRAGGO</h1>
-    <p>Secure Chat • Private Mode</p>
-
-    <input id="email" placeholder="Email">
-    <input id="password" type="password" placeholder="Password">
-
-    <button onclick="login()">Login</button>
-    <button onclick="signup()">Create Account</button>
+    <p>Private Couple System ❤️</p>
+<input id="email" type="email" placeholder="Email">
+<input id="password" type="password" placeholder="Password">
+<button onclick="login()">Login</button>
+<button onclick="signup()">Create Account</button>
   </div>
 </div>
-
 <!-- APP -->
 <div id="app" style="display:none;">
-
-<div class="phone">
-
-  <!-- HEADER -->
-  <div class="header">
-
-    <div class="avatar">🔥</div>
-
-    <div>
-      <h2>FRAGGO</h2>
-      <p>Private Couple System</p>
-    </div>
-
-<div style="margin-left:auto; display:flex; gap:8px;">
-  <button onclick="pickColor()" class="topbtn">🎨</button>
-  <button onclick="refreshApp()" class="topbtn">⟳</button>
-  <button onclick="logout()" class="topbtn logout">⎋</button>
+  <div class="phone">
+<!-- HEADER -->
+<div class="header">
+  <div class="avatar">🔥</div>
+  <div>
+    <h2>FRAGGO</h2>
+    <p>Private Couple System</p>
+  </div>
+  <div style="margin-left:auto; display:flex; gap:8px;">
+    <button onclick="pickColor()" class="topbtn">
+      🎨
+    </button>
+    <button onclick="refreshApp()" class="topbtn">
+      ⟳
+    </button>
+    <button onclick="logout()" class="topbtn logout">
+      ⎋
+    </button>
+  </div>
 </div>
-
-  <!-- CHAT -->
-  <div id="chatPage" class="page">
-
-    <div id="messages" class="messages"></div>
-
-    <div class="input-area">
-      <input id="messageInput" placeholder="Message...">
-      <button onclick="sendMessage()">➤</button>
-    </div>
-
+<!-- CHAT PAGE -->
+<div id="chatPage" class="page">
+  <div id="messages" class="messages"></div>
+  <div class="input-area">
+    <input id="messageInput" placeholder="Message...">
+    <button onclick="sendMessage()">➤</button>
   </div>
-
-  <!-- TODO -->
-  <div id="todoPage" class="page hidden">
-    <h2>Tasks</h2>
-
-    <input id="todoInput" placeholder="Add task...">
-    <button onclick="addTask()">Add</button>
-
-    <ul id="todoList"></ul>
-  </div>
-
-  <!-- MALANA -->
-  <div id="malanaPage" class="page hidden">
-    <h2>Malana 🤖</h2>
-
-    <div id="aiMessages" class="messages"></div>
-
-    <div class="input-area">
-      <input id="aiInput" placeholder="Ask Malana...">
-      <button onclick="askMalana()">➤</button>
-    </div>
-  </div>
-
-  <!-- GAMES -->
-  <div id="gamesPage" class="page hidden">
-    <h2>Tic Tac Toe</h2>
-
-    <div class="game-board">
-      <button onclick="move(this)"></button>
-      <button onclick="move(this)"></button>
-      <button onclick="move(this)"></button>
-      <button onclick="move(this)"></button>
-      <button onclick="move(this)"></button>
-      <button onclick="move(this)"></button>
-      <button onclick="move(this)"></button>
-      <button onclick="move(this)"></button>
-      <button onclick="move(this)"></button>
-    </div>
-  </div>
-
-  <!-- NAV -->
-  <div class="bottom">
-    <button onclick="showPage('chat')">💬</button>
-    <button onclick="showPage('todo')">📝</button>
-    <button onclick="showPage('malana')">🤖</button>
-    <button onclick="showPage('games')">🎮</button>
-  </div>
-
 </div>
-
+<!-- TASKS PAGE -->
+<div id="todoPage" class="page hidden">
+  <h2>Tasks</h2>
+  <input id="todoInput" placeholder="Add task...">
+  <button onclick="addTask()">Add</button>
+  <ul id="todoList"></ul>
 </div>
-
+<!-- MALANA PAGE -->
+<div id="malanaPage" class="page hidden">
+  <h2>Malana 🤖</h2>
+  <div id="aiMessages" class="messages"></div>
+  <div class="input-area">
+    <input id="aiInput" placeholder="Ask Malana...">
+    <button onclick="askMalana()">➤</button>
+  </div>
+</div>
+<!-- GAMES PAGE -->
+<div id="gamesPage" class="page hidden">
+  <h2>Tic Tac Toe</h2>
+  <div class="game-board">
+    <button onclick="move(this)"></button>
+    <button onclick="move(this)"></button>
+    <button onclick="move(this)"></button>
+    <button onclick="move(this)"></button>
+    <button onclick="move(this)"></button>
+    <button onclick="move(this)"></button>
+    <button onclick="move(this)"></button>
+    <button onclick="move(this)"></button>
+    <button onclick="move(this)"></button>
+  </div>
+</div>
+<!-- BOTTOM NAV -->
+<div class="bottom">
+  <button onclick="showPage('chat')">💬</button>
+  <button onclick="showPage('todo')">📝</button>
+  <button onclick="showPage('malana')">🤖</button>
+  <button onclick="showPage('games')">🎮</button>
+</div>
+  </div>
+</div>
 <script type="module" src="app.js"></script>
 </body>
 </html>
