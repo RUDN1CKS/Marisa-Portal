@@ -10,6 +10,26 @@
 
 <body>
 
+<!-- LOGIN SCREEN -->
+<div id="loginPage" class="login-screen">
+
+<div class="login-box">
+
+<h1>Marisa Portal ❤️</h1>
+<p>Login to continue</p>
+
+<input id="email" placeholder="Email">
+<input id="password" type="password" placeholder="Password">
+
+<button onclick="login()">Login</button>
+<button onclick="signup()">Create Account</button>
+
+</div>
+</div>
+
+<!-- APP -->
+<div id="app" style="display:none;">
+
 <div class="phone">
 
 <!-- HEADER -->
@@ -18,10 +38,10 @@
 
 <div class="header-info">
 <h2>Marisa Portal</h2>
-<p>Online Now</p>
+<p>Online</p>
 </div>
 
-<button class="malana-btn" onclick="showPage('malana')">🤖</button>
+<button onclick="showPage('malana')">🤖</button>
 </div>
 
 <!-- CHAT -->
@@ -30,7 +50,7 @@
 <div id="messages" class="messages"></div>
 
 <div class="input-area">
-<input id="messageInput" placeholder="Message Marisa...">
+<input id="messageInput" placeholder="Message...">
 <button onclick="sendMessage()">➤</button>
 </div>
 
@@ -39,10 +59,10 @@
 <!-- TODO -->
 <div id="todoPage" class="page hidden">
 
-<h2>📝 Shared To-Do</h2>
+<h2>To-Do</h2>
 
-<input id="todoInput" class="todo-input" placeholder="Add a task...">
-<button class="todo-btn" onclick="addTask()">Add Task</button>
+<input id="todoInput" class="todo-input" placeholder="Add task...">
+<button onclick="addTask()">Add</button>
 
 <ul id="todoList"></ul>
 
@@ -51,12 +71,12 @@
 <!-- MALANA -->
 <div id="malanaPage" class="page hidden">
 
-<h2>🤖 Malana</h2>
+<h2>Malana 🤖</h2>
 
 <div id="aiMessages" class="messages"></div>
 
 <div class="input-area">
-<input id="aiInput" placeholder="Ask Malana...">
+<input id="aiInput" placeholder="Ask...">
 <button onclick="askMalana()">➤</button>
 </div>
 
@@ -65,7 +85,7 @@
 <!-- GAMES -->
 <div id="gamesPage" class="page hidden">
 
-<h2>🎮 Tic Tac Toe</h2>
+<h2>Tic Tac Toe</h2>
 
 <div class="game-board">
 
@@ -95,7 +115,8 @@
 
 </div>
 
-<!-- IMPORTANT: MODULE SCRIPT -->
+</div>
+
 <script type="module" src="app.js"></script>
 
 </body>
