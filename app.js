@@ -19,7 +19,7 @@ onAuthStateChanged
 
 // ================= FIREBASE =================
 const firebaseConfig = {
-apiKey: "AIzaSyDpI19Vv9zdNjAYPp97Y12T6A8kot3GbmA",
+apiKey: "AIzaSyDpI19VV9zdNjAYPp97Y12T6A8kot3GbmA",
 authDomain: "marisa-portal.firebaseapp.com",
 projectId: "marisa-portal",
 storageBucket: "marisa-portal.firebasestorage.app",
@@ -31,26 +31,26 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// ================= USERS =================
-let currentUser = null;
+// ================= GLOBAL USER =================
+let currentUserEmail = null;
 
 const WIFE_EMAIL = "mnrudnick4@gmail.com";
 
 // ================= LOGIN =================
 onAuthStateChanged(auth, (user) => {
-if (user) {
-currentUser = user;
+if (!user) {
+document.getElementById("loginPage").style.display = "flex";
+document.getElementById("app").style.display = "none";
+return;
+}
+
+currentUserEmail = user.email; // 🔥 FORCE STORE EMAIL
 
 document.getElementById("loginPage").style.display = "none";
 document.getElementById("app").style.display = "block";
-
-markSeenMessages(); // read receipts
-} else {
-document.getElementById("loginPage").style.display = "flex";
-document.getElementById("app").style.display = "none";
-}
 });
 
+// ================= AUTH =================
 window.signup = () => {
 createUserWithEmailAndPassword(
 auth,
@@ -85,7 +85,7 @@ if (!input.value.trim()) return;
 
 addDoc(chatRef, {
 text: input.value,
-sender: currentUser.email,
+sender: currentUserEmail,
 time: Date.now(),
 seenBy: []
 });
@@ -93,44 +93,29 @@ seenBy: []
 input.value = "";
 };
 
-// ================= READ RECEIPTS =================
-async function markSeenMessages(){
-const snap = await new Promise(resolve => {
-onSnapshot(query(chatRef, orderBy("time","asc")), resolve);
-});
-
-snap.forEach(async (docSnap) => {
-const data = docSnap.data();
-
-if (!data.seenBy) return;
-
-if (!data.seenBy.includes(currentUser.email)) {
-await updateDoc(doc(db, "messages", docSnap.id), {
-seenBy: [...(data.seenBy || []), currentUser.email]
-});
-}
-});
-}
-
-// ================= RENDER CHAT =================
+// ================= FIXED RENDER =================
 onSnapshot(query(chatRef, orderBy("time","asc")), (snap) => {
 
 const box = document.getElementById("messages");
 box.innerHTML = "";
 
+// 🔥 DEBUG (you can remove later)
+console.log("CURRENT USER:", currentUserEmail);
+
 snap.forEach(docSnap => {
 
 const data = docSnap.data();
 
-const isYou = data.sender === currentUser?.email;
-const isWife = data.sender === WIFE_EMAIL;
+const sender = data.sender;
 
-let color = "#2a2f36"; // default gray
+// FORCE STRING COMPARISON SAFETY
+const isYou = String(sender).toLowerCase() === String(currentUserEmail).toLowerCase();
+const isWife = String(sender).toLowerCase() === WIFE_EMAIL.toLowerCase();
 
-if (isWife) color = "#ff4fa3"; // PINK (wife)
-if (isYou) color = "#3a86ff"; // BLUE (you)
+let color = "#2a2f36"; // default
 
-const seen = data.seenBy?.length > 1 ? "Seen 👀" : "";
+if (isWife) color = "#ff4fa3"; // PINK
+else if (isYou) color = "#3a86ff"; // BLUE
 
 const div = document.createElement("div");
 
@@ -142,14 +127,20 @@ div.style.color = "white";
 div.style.alignSelf = isYou ? "flex-end" : "flex-start";
 div.style.background = color;
 
+const time = new Date(data.time).toLocaleTimeString([], {
+hour: "2-digit",
+minute: "2-digit"
+});
+
 div.innerHTML = `
 ${data.text || ""}
 <div style="font-size:10px;opacity:0.7;margin-top:5px;">
-${seen}
+${time}
 </div>
 `;
 
 box.appendChild(div);
+
 });
 
 });
