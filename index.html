@@ -8,9 +8,9 @@
 </head>
 <body>
 
-<div id="loginPage" class="login-screen">
-  <div class="login-box">
-    <h1>FRAGGO</h1>
+<div id="loginPage" class="login">
+  <div class="box">
+    <h2>FRAGGO</h2>
 
     <input id="email" type="email" placeholder="Email">
     <input id="password" type="password" placeholder="Password">
@@ -23,26 +23,18 @@
 <div id="app" style="display:none;">
   <div class="phone">
 
-    <div class="header">
-      <div>🔥 FRAGGO</div>
-
-      <div style="margin-left:auto; display:flex; gap:8px;">
-        <button onclick="pickColor()">🎨</button>
-        <button onclick="logout()">⎋</button>
-      </div>
+    <div class="topbar">
+      <div>💬 FRAGGO</div>
+      <button onclick="pickColor()">🎨</button>
     </div>
 
-    <div class="page">
+    <div id="messages" class="chat"></div>
 
-      <div id="messages" class="messages"></div>
+    <div id="typing" class="typing hidden">typing...</div>
 
-      <div id="typing" class="typing hidden">typing...</div>
-
-      <div class="input-area">
-        <input id="messageInput" placeholder="Message..." oninput="typing()">
-        <button onclick="sendMessage()">➤</button>
-      </div>
-
+    <div class="input">
+      <input id="messageInput" placeholder="iMessage..." oninput="typing()">
+      <button onclick="sendMessage()">➤</button>
     </div>
 
   </div>
