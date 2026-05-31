@@ -164,7 +164,7 @@ if (m.createdAt?.seconds) {
 
 setTimeout(() => {
   chat.scrollTop = chat.scrollHeight;
-}, 50);
+}, 30);
 });
   }); // closes unsubscribeMessages callback
 
