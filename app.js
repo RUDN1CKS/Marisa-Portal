@@ -1,130 +1,100 @@
-// =======================
-// PAGE NAVIGATION
-// =======================
-
 function showPage(page){
 
-    document.getElementById("chatPage").classList.add("hidden");
-    document.getElementById("todoPage").classList.add("hidden");
-    document.getElementById("malanaPage").classList.add("hidden");
-    document.getElementById("gamesPage").classList.add("hidden");
+document.getElementById("chatPage").classList.add("hidden");
+document.getElementById("todoPage").classList.add("hidden");
+document.getElementById("malanaPage").classList.add("hidden");
+document.getElementById("gamesPage").classList.add("hidden");
 
-    document.getElementById(page + "Page").classList.remove("hidden");
+document.getElementById(page + "Page").classList.remove("hidden");
+
 }
 
-// expose to HTML
 window.showPage = showPage;
 
-
-// =======================
-// CHAT (LOCAL ONLY FOR NOW)
-// =======================
-
+// CHAT
 function sendMessage(){
 
-    const input = document.getElementById("messageInput");
-    const text = input.value.trim();
+const input = document.getElementById("messageInput");
 
-    if(text === "") return;
+if(!input.value.trim()) return;
 
-    const msgBox = document.getElementById("messages");
+const msg = document.createElement("div");
+msg.className = "message sent";
+msg.textContent = input.value;
 
-    const bubble = document.createElement("div");
-    bubble.className = "message sent";
-    bubble.textContent = text;
+document.getElementById("messages").appendChild(msg);
 
-    msgBox.appendChild(bubble);
+input.value = "";
 
-    input.value = "";
-
-    msgBox.scrollTop = msgBox.scrollHeight;
 }
 
 window.sendMessage = sendMessage;
 
-
-// =======================
-// TODO LIST (LOCAL)
-// =======================
-
+// TODO
 function addTask(){
 
-    const input = document.getElementById("todoInput");
-    const text = input.value.trim();
+const input = document.getElementById("todoInput");
 
-    if(text === "") return;
+if(!input.value.trim()) return;
 
-    const list = document.getElementById("todoList");
+const li = document.createElement("li");
+li.textContent = input.value;
 
-    const li = document.createElement("li");
-    li.textContent = text;
+document.getElementById("todoList").appendChild(li);
 
-    list.appendChild(li);
+input.value = "";
 
-    input.value = "";
 }
 
 window.addTask = addTask;
 
-
-// =======================
-// MALANA AI (SIMPLE RESPONSES)
-// =======================
-
+// MALANA
 function askMalana(){
 
-    const input = document.getElementById("aiInput");
-    const text = input.value.trim();
+const input = document.getElementById("aiInput");
 
-    if(text === "") return;
+if(!input.value.trim()) return;
 
-    const box = document.getElementById("aiMessages");
+const box = document.getElementById("aiMessages");
 
-    // user message
-    const user = document.createElement("div");
-    user.className = "message sent";
-    user.textContent = text;
+const user = document.createElement("div");
+user.className = "message sent";
+user.textContent = input.value;
 
-    box.appendChild(user);
+box.appendChild(user);
 
-    // AI replies
-    const replies = [
-        "I hear you ❤️",
-        "That actually makes sense.",
-        "You and Marisa should talk that through 😊",
-        "I think you're doing great.",
-        "Let’s take it one step at a time.",
-        "That sounds like something worth doing ❤️",
-        "I'm here with you."
-    ];
+const replies = [
+"I’m listening ❤️",
+"That makes sense.",
+"You’re doing great.",
+"Tell Marisa that ❤️",
+"I’ve got you.",
+"Keep going."
+];
 
-    const ai = document.createElement("div");
-    ai.className = "message received";
-    ai.textContent = replies[Math.floor(Math.random() * replies.length)];
+const ai = document.createElement("div");
+ai.className = "message received";
+ai.textContent = replies[Math.floor(Math.random()*replies.length)];
 
-    box.appendChild(ai);
+box.appendChild(ai);
 
-    input.value = "";
+input.value = "";
 
-    box.scrollTop = box.scrollHeight;
 }
 
 window.askMalana = askMalana;
 
-
-// =======================
 // TIC TAC TOE
-// =======================
-
-let currentPlayer = "X";
+let current = "X";
 
 function move(cell){
 
-    if(cell.textContent !== "") return;
+if(cell.textContent !== "") return;
 
-    cell.textContent = currentPlayer;
+cell.textContent = current;
 
-    currentPlayer = currentPlayer === "X" ? "O" : "X";
+current = current === "X" ? "O" : "X";
+
 }
 
 window.move = move;
