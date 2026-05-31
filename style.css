@@ -50,13 +50,12 @@ body {
 }
 
 .msg-row {
-  width: 100%;
   display: flex;
   margin: 6px 0;
 }
 
 .my-message {
-  background: var(--bubble-color, #4f7cff);
+  background: var(--bubble, #4f7cff);
   color: white;
   padding: 10px;
   border-radius: 18px 18px 4px 18px;
@@ -65,7 +64,6 @@ body {
 
 .their-message {
   background: #e5e5ea;
-  color: black;
   padding: 10px;
   border-radius: 18px 18px 18px 4px;
   max-width: 70%;
