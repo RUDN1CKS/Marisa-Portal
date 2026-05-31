@@ -55,24 +55,20 @@ body {
   margin: 6px 0;
 }
 
-.my-message,
-.their-message {
-  padding: 10px 12px;
-  border-radius: 18px;
-  max-width: 70%;
-  word-break: break-word;
-}
-
 .my-message {
   background: var(--bubble-color, #4f7cff);
   color: white;
-  border-bottom-right-radius: 4px;
+  padding: 10px;
+  border-radius: 18px 18px 4px 18px;
+  max-width: 70%;
 }
 
 .their-message {
   background: #e5e5ea;
   color: black;
-  border-bottom-left-radius: 4px;
+  padding: 10px;
+  border-radius: 18px 18px 18px 4px;
+  max-width: 70%;
 }
 
 .meta {
