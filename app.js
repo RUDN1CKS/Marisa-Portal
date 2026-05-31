@@ -1,5 +1,5 @@
 // =======================
-// FRAGGO CORE APP
+// FRAGGO - FINAL CHAT CORE
 // =======================
 
 // ---------- AUTH ----------
@@ -9,7 +9,7 @@ function login() {
 }
 
 function signup() {
-  alert("Hook Firebase here");
+  alert("Connect Firebase later");
 }
 
 function logout() {
@@ -17,46 +17,70 @@ function logout() {
   document.getElementById("app").style.display = "none";
 }
 
-// ---------- NAV ----------
+// ---------- PAGE ----------
 function showPage(page) {
   document.querySelectorAll(".page").forEach(p => p.classList.add("hidden"));
-
   document.getElementById(page + "Page").classList.remove("hidden");
   setTimeout(scrollToBottom, 50);
 }
 
-// ---------- CHAT ----------
-let messages = [];
+// ---------- CHAT STORAGE (SYNC FIX) ----------
+let messages = JSON.parse(localStorage.getItem("fraggo_msgs") || "[]");
 
+// ---------- SEND ----------
 function sendMessage() {
   const input = document.getElementById("messageInput");
   const text = input.value.trim();
   if (!text) return;
 
-  messages.push({ text, sender: "me" });
+  messages.push({
+    text,
+    sender: "me",
+    time: Date.now()
+  });
 
+  save();
   input.value = "";
-  renderMessages();
+  render();
 }
 
-function renderMessages() {
+// ---------- SAVE ----------
+function save() {
+  localStorage.setItem("fraggo_msgs", JSON.stringify(messages));
+}
+
+// ---------- TIME ----------
+function time(t) {
+  return new Date(t).toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+}
+
+// ---------- RENDER ----------
+function render() {
   const box = document.getElementById("messages");
   box.innerHTML = "";
 
   messages.forEach(m => {
     const row = document.createElement("div");
     row.className = "msg-row";
+    row.style.justifyContent = m.sender === "me" ? "flex-end" : "flex-start";
 
     const bubble = document.createElement("div");
-    bubble.textContent = m.text;
+    bubble.className = m.sender === "me" ? "my-message" : "their-message";
 
-    if (m.sender === "me") {
-      row.style.justifyContent = "flex-end";
-      bubble.className = "my-message";
-    } else {
-      row.style.justifyContent = "flex-start";
-      bubble.className = "their-message";
-    }
+    const text = document.createElement("div");
+    text.textContent = m.text;
+
+    const ts = document.createElement("div");
+    ts.textContent = time(m.time);
+    ts.style.fontSize = "10px";
+    ts.style.opacity = "0.6";
+    ts.style.marginTop = "4px";
+
+    bubble.appendChild(text);
+    bubble.appendChild(ts);
 
     row.appendChild(bubble);
     box.appendChild(row);
@@ -65,45 +89,51 @@ function renderMessages() {
   scrollToBottom();
 }
 
+// ---------- SCROLL ----------
 function scrollToBottom() {
   const box = document.getElementById("messages");
-  box.scrollTo({ top: box.scrollHeight, behavior: "smooth" });
+  if (!box) return;
+
+  box.scrollTo({
+    top: box.scrollHeight,
+    behavior: "smooth"
+  });
 }
 
-// ---------- BUBBLE COLOR ----------
+// ---------- COLOR ----------
 function pickColor() {
-  const color = prompt("Pick bubble color (pink, #ff69b4, etc):");
-  if (!color) return;
+  const c = prompt("Pick bubble color (pink, #ff69b4, etc)");
+  if (!c) return;
 
-  localStorage.setItem("bubbleColor", color);
-  applyBubbleColor(color);
+  localStorage.setItem("bubbleColor", c);
+  applyColor(c);
 }
 
-function applyBubbleColor(color) {
-  document.documentElement.style.setProperty("--bubble-color", color);
+function applyColor(c) {
+  document.documentElement.style.setProperty("--bubble-color", c);
 }
 
 // ---------- REFRESH ----------
 function refreshApp() {
-  applySavedSettings();
-  renderMessages();
-  scrollToBottom();
+  messages = JSON.parse(localStorage.getItem("fraggo_msgs") || "[]");
+  applySaved();
+  render();
 }
 
 // ---------- SETTINGS ----------
-function applySavedSettings() {
-  const saved = localStorage.getItem("bubbleColor");
-  if (saved) applyBubbleColor(saved);
+function applySaved() {
+  const c = localStorage.getItem("bubbleColor");
+  if (c) applyColor(c);
 }
 
 // ---------- TODO ----------
 function addTask() {
   const input = document.getElementById("todoInput");
-  const val = input.value.trim();
-  if (!val) return;
+  const v = input.value.trim();
+  if (!v) return;
 
   const li = document.createElement("li");
-  li.textContent = val;
+  li.textContent = v;
   li.onclick = () => li.remove();
 
   document.getElementById("todoList").appendChild(li);
@@ -124,20 +154,11 @@ function askMalana() {
   input.value = "";
 }
 
-// ---------- TIC TAC TOE ----------
-let currentPlayer = "X";
-
-function move(btn) {
-  if (btn.textContent) return;
-  btn.textContent = currentPlayer;
-  currentPlayer = currentPlayer === "X" ? "O" : "X";
-}
-
 // ---------- INIT ----------
 window.addEventListener("load", () => {
-  applySavedSettings();
+  applySaved();
+  render();
   showPage("chat");
-  renderMessages();
 });
 
 // ---------- EXPORTS ----------
@@ -148,6 +169,5 @@ window.showPage = showPage;
 window.sendMessage = sendMessage;
 window.addTask = addTask;
 window.askMalana = askMalana;
-window.move = move;
 window.pickColor = pickColor;
 window.refreshApp = refreshApp;
