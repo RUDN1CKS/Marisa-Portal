@@ -4,72 +4,118 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Marisa Portal ❤️</title>
+
 <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
+
 <div class="phone">
+
+<!-- HEADER -->
 <div class="header">
+
 <div class="avatar">❤️</div>
+
 <div class="header-info">
 <h2>Marisa Portal</h2>
 <p>Online Now</p>
 </div>
-<button class="malana-btn" onclick="showPage('malana')">
-🤖
-</button>
+
+<button class="malana-btn" onclick="showPage('malana')">🤖</button>
+
 </div>
+
 <!-- CHAT PAGE -->
 <div id="chatPage" class="page">
+
 <div id="messages" class="messages">
+
 <div class="message received">
 Hey babe ❤️
 </div>
-<div class="message sent">
-Building our app 😎
+
 </div>
-</div>
+
 <div class="input-area">
 <input id="messageInput" placeholder="Message Marisa...">
 <button onclick="sendMessage()">➤</button>
 </div>
+
 </div>
+
 <!-- TODO PAGE -->
 <div id="todoPage" class="page hidden">
+
 <h2>📝 Shared To-Do</h2>
-<input id="todoInput" placeholder="Add a task..." class="todo-input">
+
+<input id="todoInput" class="todo-input" placeholder="Add a task...">
+
 <button class="todo-btn" onclick="addTask()">
 Add Task
 </button>
+
 <ul id="todoList"></ul>
+
 </div>
+
 <!-- MALANA PAGE -->
 <div id="malanaPage" class="page hidden">
+
 <h2>🤖 Malana</h2>
+
 <div id="aiMessages" class="messages">
+
 <div class="message received">
 Hi ❤️ I'm Malana. Ask me anything.
 </div>
+
 </div>
+
 <div class="input-area">
 <input id="aiInput" placeholder="Ask Malana...">
 <button onclick="askMalana()">➤</button>
 </div>
+
 </div>
+
 <!-- GAMES PAGE -->
 <div id="gamesPage" class="page hidden">
+
 <h2>🎮 Tic Tac Toe</h2>
+
 <div class="game-board">
+
+<button onclick="move(this)"></button>
+<button onclick="move(this)"></button>
+<button onclick="move(this)"></button>
+
+<button onclick="move(this)"></button>
+<button onclick="move(this)"></button>
+<button onclick="move(this)"></button>
+
+<button onclick="move(this)"></button>
+<button onclick="move(this)"></button>
+<button onclick="move(this)"></button>
+
 </div>
+
 </div>
+
+<!-- BOTTOM NAV -->
 <div class="bottom">
 
-💬
-📝
-🤖
-🎮
+<button onclick="showPage('chat')">💬</button>
+<button onclick="showPage('todo')">📝</button>
+<button onclick="showPage('malana')">🤖</button>
+<button onclick="showPage('games')">🎮</button>
 
 </div>
+
 </div>
+
+<!-- SCRIPT -->
 <script src="app.js"></script>
+
 </body>
-</ht
+</html>
