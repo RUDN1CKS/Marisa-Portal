@@ -9,15 +9,21 @@
 <body>
 
 <!-- LOGIN -->
-<div id="loginPage" class="login">
-  <div class="box">
-    <h2>FRAGGO</h2>
-    <input id="email" type="email" placeholder="Email">
-    <input id="password" type="password" placeholder="Password">
-    <button onclick="login()">Login</button>
-    <button onclick="signup()">Create Account</button>
-  </div>
-</div>
+window.login = () => {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  signInWithEmailAndPassword(auth, email, password)
+    .catch(err => alert(err.message));
+};
+
+window.signup = () => {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  createUserWithEmailAndPassword(auth, email, password)
+    .catch(err => alert(err.message));
+};
 
 <!-- APP -->
 <div id="app" style="display:none;">
