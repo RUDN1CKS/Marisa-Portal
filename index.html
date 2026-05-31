@@ -8,6 +8,7 @@
 </head>
 <body>
 
+<!-- LOGIN -->
 <div id="loginPage" class="login">
   <div class="box">
     <h2>FRAGGO</h2>
@@ -18,9 +19,11 @@
   </div>
 </div>
 
+<!-- APP -->
 <div id="app" style="display:none;">
   <div class="phone">
 
+    <!-- TOP -->
     <div class="topbar">
       <div>💬 FRAGGO</div>
       <div>
@@ -30,11 +33,37 @@
       </div>
     </div>
 
-    <div id="messages" class="chat"></div>
+    <!-- PAGES -->
+    <div id="messagesPage" class="page">
+      <div id="messages" class="chat"></div>
 
-    <div class="input">
-      <input id="messageInput" placeholder="Message...">
-      <button onclick="sendMessage()">➤</button>
+      <div class="input">
+        <input id="messageInput" placeholder="Message...">
+        <button onclick="sendMessage()">➤</button>
+      </div>
+    </div>
+
+    <div id="listPage" class="page hidden">
+      <h3>Tasks</h3>
+      <input id="todoInput" placeholder="New task...">
+      <button onclick="addTask()">Add</button>
+      <ul id="todoList"></ul>
+    </div>
+
+    <div id="gamesPage" class="page hidden">
+      <h3>Tic Tac Toe</h3>
+      <div class="grid">
+        <button onclick="move(this)"></button><button onclick="move(this)"></button><button onclick="move(this)"></button>
+        <button onclick="move(this)"></button><button onclick="move(this)"></button><button onclick="move(this)"></button>
+        <button onclick="move(this)"></button><button onclick="move(this)"></button><button onclick="move(this)"></button>
+      </div>
+    </div>
+
+    <!-- BOTTOM TABS -->
+    <div class="tabs">
+      <button onclick="showTab('messages')">💬</button>
+      <button onclick="showTab('list')">📝</button>
+      <button onclick="showTab('games')">🎮</button>
     </div>
 
   </div>
