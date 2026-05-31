@@ -16,78 +16,88 @@ import {
   onSnapshot,
   serverTimestamp,
   doc,
-  setDoc,
-  onSnapshot as docListen
+  setDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 
 // =======================
-// FIREBASE CONFIG
+// 🔥 YOUR FIREBASE CONFIG (FIXED)
 // =======================
 const firebaseConfig = {
-  apiKey: "PUT",
-  authDomain: "PUT",
-  projectId: "PUT",
-  storageBucket: "PUT",
-  messagingSenderId: "PUT",
-  appId: "PUT"
+  apiKey: "AIzaSyDpI19Vv9zdNjAYPp97Y12T6A8kot3GbmA",
+  authDomain: "marisa-portal.firebaseapp.com",
+  projectId: "marisa-portal",
+  storageBucket: "marisa-portal.firebasestorage.app",
+  messagingSenderId: "977842432790",
+  appId: "1:977842432790:web:4a05992c796cfdb392fe37",
+  measurementId: "G-6E15QG75T6"
 };
 
+// init
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
 // =======================
-// AUTH
+// DOM
+// =======================
+const messagesBox = document.getElementById("messages");
+
+// =======================
+// ENCRYPTION (light privacy layer)
+// =======================
+function enc(t){ return btoa(unescape(encodeURIComponent(t))) }
+function dec(t){ try { return decodeURIComponent(escape(atob(t))) } catch { return t } }
+
+// =======================
+// LOGIN
 // =======================
 window.login = () => {
   signInWithEmailAndPassword(auth, email.value, password.value)
     .then(() => {
       loginPage.style.display = "none";
       app.style.display = "block";
-    });
+    })
+    .catch(e => alert(e.message));
 };
 
 window.signup = () => {
-  createUserWithEmailAndPassword(auth, email.value, password.value);
+  createUserWithEmailAndPassword(auth, email.value, password.value)
+    .catch(e => alert(e.message));
 };
 
 window.logout = () => signOut(auth);
-
-// =======================
-// ENCRYPTION (light)
-function enc(t){return btoa(unescape(encodeURIComponent(t)))}
-function dec(t){try{return decodeURIComponent(escape(atob(t)))}catch{return t}}
 
 // =======================
 // SEND MESSAGE
 // =======================
 window.sendMessage = async () => {
   const text = messageInput.value.trim();
-  if (!text) return;
+  if (!text || !auth.currentUser) return;
 
   await addDoc(collection(db, "messages"), {
     text: enc(text),
     uid: auth.currentUser.uid,
     createdAt: serverTimestamp(),
-    status: "sent",
-    reaction: ""
+    status: "sent"
   });
 
   messageInput.value = "";
-  sendStopTyping();
+  stopTyping();
 };
 
 // =======================
-// CHAT STREAM
+// REAL-TIME CHAT
 // =======================
 const q = query(collection(db, "messages"), orderBy("createdAt"));
 
 onSnapshot(q, (snap) => {
-  messages.innerHTML = "";
+  messagesBox.innerHTML = "";
 
   snap.forEach((d) => {
     const m = d.data();
+    if (!m.text) return;
+
     const isMe = m.uid === auth.currentUser?.uid;
 
     const row = document.createElement("div");
@@ -102,24 +112,20 @@ onSnapshot(q, (snap) => {
 
     const meta = document.createElement("div");
     meta.className = "meta";
-    meta.textContent = m.status;
-
-    const react = document.createElement("div");
-    react.textContent = m.reaction || "";
+    meta.textContent = m.status || "";
 
     bubble.appendChild(text);
     bubble.appendChild(meta);
-    bubble.appendChild(react);
 
     row.appendChild(bubble);
-    messages.appendChild(row);
+    messagesBox.appendChild(row);
   });
 
-  messages.scrollTop = messages.scrollHeight;
+  messagesBox.scrollTop = messagesBox.scrollHeight;
 });
 
 // =======================
-// TYPING (REAL TIME FIRESTORE)
+// TYPING INDICATOR (SIMPLE GLOBAL)
 // =======================
 window.sendTyping = async () => {
   if (!auth.currentUser) return;
@@ -130,40 +136,44 @@ window.sendTyping = async () => {
   });
 };
 
-function sendStopTyping(){
+function stopTyping() {
   setDoc(doc(db, "typing", "global"), {
     uid: "",
     typing: false
   });
 }
 
-docListen(doc(db, "typing", "global"), (snap) => {
-  const data = snap.data();
-  if (!data?.typing) {
-    typing.classList.add("hidden");
-    return;
-  }
+// listen typing
+import { onSnapshot as listenDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-  if (data.uid !== auth.currentUser?.uid) {
+listenDoc(doc(db, "typing", "global"), (snap) => {
+  const data = snap.data();
+  const typing = document.getElementById("typing");
+
+  if (!data?.typing || data.uid === auth.currentUser?.uid) {
+    typing.classList.add("hidden");
+  } else {
     typing.classList.remove("hidden");
   }
 });
 
 // =======================
-// COLOR
-// =======================
-window.pickColor = () => {
-  const c = prompt("Color:");
-  localStorage.setItem("bubble", c);
-  document.documentElement.style.setProperty("--bubble-color", c);
-};
-
-// =======================
 // AUTH STATE
 // =======================
-onAuthStateChanged(auth, (u) => {
-  if (u) {
+onAuthStateChanged(auth, (user) => {
+  if (user) {
     loginPage.style.display = "none";
     app.style.display = "block";
   }
 });
+
+// =======================
+// BUBBLE COLOR
+// =======================
+window.pickColor = () => {
+  const c = prompt("Pick bubble color:");
+  if (!c) return;
+
+  localStorage.setItem("bubble", c);
+  document.documentElement.style.setProperty("--bubble-color", c);
+};
