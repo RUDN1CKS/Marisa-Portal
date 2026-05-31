@@ -8,6 +8,13 @@ query,
 orderBy
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+import {
+getAuth,
+createUserWithEmailAndPassword,
+signInWithEmailAndPassword,
+onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
 const firebaseConfig = {
 apiKey: "AIzaSyDpI19Vv9zdNjAYPp97Y12T6A8kot3GbmA",
 authDomain: "marisa-portal.firebaseapp.com",
@@ -19,190 +26,135 @@ appId: "1:977842432790:web:4a05992c796cfdb392fe37"
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
 
-// =======================
-// TIME
-// =======================
+// SHOW APP AFTER LOGIN
+onAuthStateChanged(auth, (user)=>{
 
-function getTime(){
-const now = new Date();
-let h = now.getHours();
-let m = now.getMinutes();
-let ampm = h >= 12 ? "PM" : "AM";
-h = h % 12 || 12;
-m = m < 10 ? "0" + m : m;
-return `${h}:${m} ${ampm}`;
+if(user){
+document.getElementById("loginPage").style.display = "none";
+document.getElementById("app").style.display = "block";
+}else{
+document.getElementById("loginPage").style.display = "flex";
+document.getElementById("app").style.display = "none";
 }
 
-// =======================
-// PAGE SWITCH
-// =======================
+});
 
+// AUTH
+function signup(){
+createUserWithEmailAndPassword(
+auth,
+document.getElementById("email").value,
+document.getElementById("password").value
+).catch(e=>alert(e.message));
+}
+
+function login(){
+signInWithEmailAndPassword(
+auth,
+document.getElementById("email").value,
+document.getElementById("password").value
+).catch(e=>alert(e.message));
+}
+
+window.signup = signup;
+window.login = login;
+
+// NAV
 function showPage(page){
 
-document.getElementById("chatPage").classList.add("hidden");
-document.getElementById("todoPage").classList.add("hidden");
-document.getElementById("malanaPage").classList.add("hidden");
-document.getElementById("gamesPage").classList.add("hidden");
+["chatPage","todoPage","malanaPage","gamesPage"].forEach(id=>{
+document.getElementById(id).classList.add("hidden");
+});
 
-document.getElementById(page + "Page").classList.remove("hidden");
-
+document.getElementById(page+"Page").classList.remove("hidden");
 }
 
 window.showPage = showPage;
 
-// =======================
-// CHAT (REAL TIME)
-// =======================
+// CHAT
+const chatRef = collection(db,"messages");
 
-const chatRef = collection(db, "messages");
-
-async function sendMessage(){
-
+function sendMessage(){
 const input = document.getElementById("messageInput");
-const text = input.value.trim();
+if(!input.value) return;
 
-if(!text) return;
-
-await addDoc(chatRef, {
-text,
-time: Date.now()
+addDoc(chatRef,{
+text:input.value,
+time:Date.now()
 });
 
-input.value = "";
+input.value="";
 }
 
 window.sendMessage = sendMessage;
 
-const chatQuery = query(chatRef, orderBy("time", "asc"));
-
-onSnapshot(chatQuery, (snapshot) => {
-
-const box = document.getElementById("messages");
-box.innerHTML = "";
-
-snapshot.forEach(doc => {
-
-const data = doc.data();
-
-const div = document.createElement("div");
-div.className = "message sent";
-
-div.innerHTML = `
-${data.text}
-<div style="font-size:10px;opacity:0.6;margin-top:5px;">
-${getTime()}
-</div>
-`;
-
+onSnapshot(query(chatRef,orderBy("time","asc")),(snap)=>{
+const box=document.getElementById("messages");
+box.innerHTML="";
+snap.forEach(d=>{
+const div=document.createElement("div");
+div.className="message sent";
+div.textContent=d.data().text;
 box.appendChild(div);
-
+});
 });
 
+// TODO
+const todoRef = collection(db,"todos");
+
+function addTask(){
+const input=document.getElementById("todoInput");
+if(!input.value) return;
+
+addDoc(todoRef,{
+text:input.value,
+time:Date.now()
 });
 
-// =======================
-// TODO (REAL TIME)
-// =======================
-
-const todoRef = collection(db, "todos");
-
-async function addTask(){
-
-const input = document.getElementById("todoInput");
-const text = input.value.trim();
-
-if(!text) return;
-
-await addDoc(todoRef, {
-text,
-time: Date.now()
-});
-
-input.value = "";
+input.value="";
 }
 
-window.addTask = addTask;
+window.addTask=addTask;
 
-const todoQuery = query(todoRef, orderBy("time", "asc"));
-
-onSnapshot(todoQuery, (snapshot) => {
-
-const list = document.getElementById("todoList");
-list.innerHTML = "";
-
-snapshot.forEach(doc => {
-
-const li = document.createElement("li");
-
-li.innerHTML = `
-${doc.data().text}
-<span style="font-size:10px;opacity:0.6;margin-left:8px;">
-${getTime()}
-</span>
-`;
-
+onSnapshot(query(todoRef,orderBy("time","asc")),(snap)=>{
+const list=document.getElementById("todoList");
+list.innerHTML="";
+snap.forEach(d=>{
+const li=document.createElement("li");
+li.textContent=d.data().text;
 list.appendChild(li);
-
+});
 });
 
-});
-
-// =======================
-// MALANA (LOCAL AI)
-// =======================
-
+// MALANA
 function askMalana(){
+const input=document.getElementById("aiInput");
+if(!input.value) return;
 
-const input = document.getElementById("aiInput");
-const text = input.value.trim();
+const box=document.getElementById("aiMessages");
 
-if(!text) return;
+box.innerHTML+=`<div class="message sent">${input.value}</div>`;
 
-const box = document.getElementById("aiMessages");
+const replies=["I hear you ❤️","Got you.","Keep going ❤️","That makes sense."];
 
-const replies = [
-"I’m listening ❤️",
-"That makes sense.",
-"You’ve got this.",
-"Talk to Marisa ❤️",
-"I’m here with you.",
-"Keep going."
-];
+box.innerHTML+=`<div class="message received">${
+replies[Math.floor(Math.random()*replies.length)]
+}</div>`;
 
-box.innerHTML += `
-<div class="message sent">
-${text}<br>
-<small>${getTime()}</small>
-</div>
-`;
-
-box.innerHTML += `
-<div class="message received">
-${replies[Math.floor(Math.random()*replies.length)]}<br>
-<small>${getTime()}</small>
-</div>
-`;
-
-input.value = "";
+input.value="";
 }
 
-window.askMalana = askMalana;
+window.askMalana=askMalana;
 
-// =======================
-// TIC TAC TOE
-// =======================
-
-let current = "X";
+// GAME
+let current="X";
 
 function move(cell){
-
-if(cell.textContent !== "") return;
-
-cell.textContent = current;
-
-current = current === "X" ? "O" : "X";
-
+if(cell.textContent) return;
+cell.textContent=current;
+current=current==="X"?"O":"X";
 }
 
-window.move = move;
+window.move=move;
