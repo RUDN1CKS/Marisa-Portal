@@ -19,9 +19,7 @@ import {
   setDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// =======================
-// FIREBASE CONFIG
-// =======================
+// 🔥 FIREBASE CONFIG (yours)
 const firebaseConfig = {
   apiKey: "AIzaSyDpI19Vv9zdNjAYPp97Y12T6A8kot3GbmA",
   authDomain: "marisa-portal.firebaseapp.com",
@@ -35,20 +33,19 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// =======================
-// SAFE DOM LOAD
-// =======================
+// DOM safe init
 window.addEventListener("DOMContentLoaded", () => {
 
   const loginPage = document.getElementById("loginPage");
   const appDiv = document.getElementById("app");
-  const messages = document.getElementById("messages");
+  const chat = document.getElementById("messages");
   const input = document.getElementById("messageInput");
-  const typingBox = document.getElementById("typing");
 
-  // =======================
-  // AUTH
-  // =======================
+  // ENCODE (light privacy)
+  const enc = t => btoa(unescape(encodeURIComponent(t)));
+  const dec = t => decodeURIComponent(escape(atob(t)));
+
+  // LOGIN
   window.login = () =>
     signInWithEmailAndPassword(auth, email.value, password.value);
 
@@ -57,36 +54,25 @@ window.addEventListener("DOMContentLoaded", () => {
 
   window.logout = () => signOut(auth);
 
-  // =======================
-  // ENCRYPT (simple)
-  // =======================
-  const enc = t => btoa(unescape(encodeURIComponent(t)));
-  const dec = t => decodeURIComponent(escape(atob(t)));
-
-  // =======================
   // SEND MESSAGE
-  // =======================
   window.sendMessage = async () => {
     if (!input.value) return;
 
     await addDoc(collection(db, "messages"), {
       text: enc(input.value),
       uid: auth.currentUser.uid,
-      createdAt: serverTimestamp(),
-      status: "sent"
+      createdAt: serverTimestamp()
     });
 
     input.value = "";
     stopTyping();
   };
 
-  // =======================
-  // REAL TIME CHAT
-  // =======================
+  // LIVE CHAT
   const q = query(collection(db, "messages"), orderBy("createdAt"));
 
   onSnapshot(q, snap => {
-    messages.innerHTML = "";
+    chat.innerHTML = "";
 
     snap.forEach(d => {
       const m = d.data();
@@ -95,36 +81,36 @@ window.addEventListener("DOMContentLoaded", () => {
       const isMe = m.uid === auth.currentUser?.uid;
 
       const row = document.createElement("div");
-      row.className = "msg-row";
-      row.style.justifyContent = isMe ? "flex-end" : "flex-start";
+      row.className = "row";
 
       const bubble = document.createElement("div");
-      bubble.className = isMe ? "my-message" : "their-message";
+      bubble.className = isMe ? "me" : "them";
 
       const text = document.createElement("div");
       text.textContent = dec(m.text);
 
-      const meta = document.createElement("div");
-      meta.className = "meta";
-      meta.textContent = m.status;
+      const time = document.createElement("div");
+      time.className = "time";
+      time.textContent = m.createdAt?.seconds
+        ? new Date(m.createdAt.seconds * 1000).toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit"
+          })
+        : "";
 
       bubble.appendChild(text);
-      bubble.appendChild(meta);
+      bubble.appendChild(time);
       row.appendChild(bubble);
-      messages.appendChild(row);
+      chat.appendChild(row);
     });
 
-    messages.scrollTop = messages.scrollHeight;
+    chat.scrollTop = chat.scrollHeight;
   });
 
-  // =======================
   // TYPING
-  // =======================
   let typingTimer;
 
   window.typing = async () => {
-    if (!auth.currentUser) return;
-
     await setDoc(doc(db, "typing", "global"), {
       uid: auth.currentUser.uid,
       typing: true
@@ -142,28 +128,27 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 
   // typing listener
-  onSnapshot(doc(db, "typing", "global"), snap => {
-    const d = snap.data();
+  import { onSnapshot as listenDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    if (!d?.typing || d.uid === auth.currentUser?.uid) {
-      typingBox.classList.add("hidden");
+  listenDoc(doc(db, "typing", "global"), snap => {
+    const data = snap.data();
+    const t = document.getElementById("typing");
+
+    if (!data?.typing || data.uid === auth.currentUser?.uid) {
+      t.classList.add("hidden");
     } else {
-      typingBox.classList.remove("hidden");
+      t.classList.remove("hidden");
     }
   });
 
-  // =======================
-  // COLOR PICKER (PINK INCLUDED)
-  // =======================
+  // BUBBLE COLOR (PINK READY)
   window.pickColor = () => {
-    const c = prompt("Pick color (try pink):");
+    const c = prompt("Color (try pink or #ff69b4):");
     if (!c) return;
     document.documentElement.style.setProperty("--bubble", c);
   };
 
-  // =======================
   // AUTH STATE
-  // =======================
   onAuthStateChanged(auth, user => {
     if (user) {
       loginPage.style.display = "none";
