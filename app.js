@@ -42,7 +42,12 @@ const loginPage = document.getElementById("loginPage");
 const appDiv = document.getElementById("app");
 const chat = document.getElementById("messages");
 const input = document.getElementById("messageInput");
-
+input?.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    sendMessage();
+  }
+});
+  
 /* AUTH */
 window.login = () =>
   signInWithEmailAndPassword(
@@ -83,11 +88,17 @@ window.sendMessage = async () => {
 let unsubscribeMessages = null;
 
 onAuthStateChanged(auth, user => {
-  if (!user) return;
+  if (!user) {
+    if (unsubscribeMessages) unsubscribeMessages();
+    return;
+  }
 
   const q = query(
     collection(db, "messages"),
-    orderBy("createdAt")
+const q = query(
+  collection(db, "messages"),
+  orderBy("createdAt", "asc")
+);
   );
 
   if (unsubscribeMessages) unsubscribeMessages();
@@ -113,7 +124,17 @@ onAuthStateChanged(auth, user => {
     const time = document.createElement("div");
     time.className = "meta";
 
-    if (m.createdAt?.seconds) {
+if (m.createdAt?.seconds) {
+  const d = m.createdAt.seconds * 1000;
+  time.textContent = new Date(d).toLocaleString([], {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit"
+  });
+} else {
+  time.textContent = "";
+}
       time.textContent = new Date(m.createdAt.seconds * 1000)
 .toLocaleString([], {
   month: 'short',
@@ -195,9 +216,8 @@ const notesQuery = query(
 );
 
 onSnapshot(notesQuery, (snapshot) => {
-  const list = document.getElementById("todoList");
-
-  if (!list) return;
+const list = document.getElementById("todoList");
+if (!list) return;
 
   list.innerHTML = "";
 
