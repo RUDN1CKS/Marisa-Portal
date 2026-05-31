@@ -1,9 +1,10 @@
 body {
   margin: 0;
   font-family: Arial;
-  background: #0b0b0f;
+  background: #0f0f12;
 }
 
+/* login */
 .login {
   height: 100vh;
   display: flex;
@@ -15,22 +16,23 @@ body {
 .box {
   background: #1c1c1e;
   padding: 20px;
-  border-radius: 14px;
+  border-radius: 12px;
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
+/* app */
 .phone {
   height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
-.topbar {
+.top {
   display: flex;
   justify-content: space-between;
-  padding: 12px;
+  padding: 10px;
   background: #111;
   color: white;
 }
@@ -38,19 +40,18 @@ body {
 .chat {
   flex: 1;
   overflow-y: auto;
-  padding: 12px;
+  padding: 10px;
+  background: #f2f2f7;
   display: flex;
   flex-direction: column;
-  background: #f2f2f7;
 }
 
-/* iMessage STYLE ROW */
+/* ROW FIX (this was your main issue) */
 .row {
   display: flex;
-  margin: 4px 0;
+  margin: 5px 0;
 }
 
-/* MY MESSAGE (blue bubble like iMessage) */
 .me {
   margin-left: auto;
   background: var(--bubble, #0a84ff);
@@ -58,10 +59,8 @@ body {
   padding: 10px 14px;
   border-radius: 18px 18px 6px 18px;
   max-width: 70%;
-  font-size: 15px;
 }
 
-/* THEIR MESSAGE (gray bubble like iMessage) */
 .them {
   margin-right: auto;
   background: #e5e5ea;
@@ -69,7 +68,6 @@ body {
   padding: 10px 14px;
   border-radius: 18px 18px 18px 6px;
   max-width: 70%;
-  font-size: 15px;
 }
 
 .time {
