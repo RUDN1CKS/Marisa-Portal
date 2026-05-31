@@ -46,7 +46,7 @@ body {
 
 .row {
   display: flex;
-  margin: 5px 0;
+  margin: 6px 0;
 }
 
 .me {
@@ -72,14 +72,6 @@ body {
   opacity: 0.6;
   margin-top: 4px;
 }
-
-.typing {
-  font-size: 12px;
-  padding: 4px 10px;
-  color: gray;
-}
-
-.hidden { display:none; }
 
 .input {
   display: flex;
