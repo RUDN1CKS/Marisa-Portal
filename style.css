@@ -1,6 +1,6 @@
 body {
   margin: 0;
-  font-family: Arial;
+  font-family: Arial, sans-serif;
   background: #f2f2f7;
   color: #111;
   transition: background 0.3s ease, color 0.3s ease;
@@ -9,15 +9,15 @@ body {
 /* DARK MODE */
 body.dark {
   background: #0f0f12;
-  color: white;
+  color: #f5f5f5;
 }
 
+/* LOGIN */
 .login {
   height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  color: white;
 }
 
 .box {
@@ -27,6 +27,15 @@ body.dark {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  width: 260px;
+}
+
+/* INPUTS */
+input {
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  outline: none;
 }
 
 /* PHONE LAYOUT */
@@ -45,7 +54,6 @@ body.dark {
   color: white;
 }
 
-/* DARK MODE TOPBAR */
 body.dark .topbar {
   background: #1c1c1e;
 }
@@ -62,13 +70,12 @@ body.dark .topbar {
   flex: 1;
   overflow-y: auto;
   padding: 10px;
-  background: #f2f2f7;
   display: flex;
   flex-direction: column;
+  background: #f2f2f7;
   transition: background 0.3s ease;
 }
 
-/* DARK CHAT BACKGROUND */
 body.dark .chat {
   background: #121212;
 }
@@ -78,13 +85,15 @@ body.dark .chat {
   margin: 6px 0;
 }
 
+/* BUBBLES */
 .me {
   margin-left: auto;
   background: var(--bubble, #0a84ff);
   color: white;
   padding: 10px 12px;
   border-radius: 18px 18px 6px 18px;
-  max-width: 70%;
+  max-width: 75%;
+  word-wrap: break-word;
 }
 
 .them {
@@ -93,15 +102,16 @@ body.dark .chat {
   color: black;
   padding: 10px 12px;
   border-radius: 18px 18px 18px 6px;
-  max-width: 70%;
+  max-width: 75%;
+  word-wrap: break-word;
 }
 
-/* DARK MODE CHAT BUBBLES */
 body.dark .them {
   background: #2a2a2a;
-  color: white;
+  color: #f5f5f5;
 }
 
+/* META TEXT */
 .meta {
   font-size: 10px;
   opacity: 0.6;
@@ -116,19 +126,19 @@ body.dark .them {
 .notes ul {
   list-style: none;
   padding: 0;
+  margin: 0;
 }
 
 .notes li {
   background: #ddd;
-  margin: 5px 0;
-  padding: 8px;
+  margin: 6px 0;
+  padding: 10px;
   border-radius: 8px;
 }
 
-/* DARK NOTES */
 body.dark .notes li {
   background: #2a2a2a;
-  color: white;
+  color: #f5f5f5;
 }
 
 /* GAME */
@@ -148,11 +158,11 @@ body.dark .notes li {
 .grid button {
   height: 80px;
   font-size: 24px;
-  background: white;
   border: none;
+  border-radius: 6px;
+  background: white;
 }
 
-/* DARK GAME */
 body.dark .grid button {
   background: #2a2a2a;
   color: white;
