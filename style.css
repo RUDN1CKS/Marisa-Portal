@@ -1,10 +1,10 @@
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
+  font-family: Arial;
   background: #111;
 }
 
-/* LOGIN */
+/* login */
 .login-screen {
   display: flex;
   height: 100vh;
@@ -22,14 +22,14 @@ body {
   border-radius: 10px;
 }
 
-/* PHONE */
+/* phone */
 .phone {
   height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
-/* HEADER */
+/* header */
 .header {
   display: flex;
   align-items: center;
@@ -38,25 +38,7 @@ body {
   color: white;
 }
 
-.avatar {
-  margin-right: 10px;
-}
-
-/* BUTTONS */
-.topbtn {
-  background: #333;
-  color: white;
-  border: none;
-  padding: 6px 10px;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.logout {
-  background: #a00;
-}
-
-/* PAGES */
+/* pages */
 .page {
   flex: 1;
   display: flex;
@@ -67,7 +49,7 @@ body {
   display: none;
 }
 
-/* CHAT */
+/* CHAT AREA */
 .messages {
   flex: 1;
   overflow-y: auto;
@@ -77,33 +59,38 @@ body {
   flex-direction: column;
 }
 
-/* MESSAGE ROWS */
+/* ROW wrapper (IMPORTANT FIX) */
 .msg-row {
-  display: flex;
   width: 100%;
+  display: flex;
   margin: 5px 0;
 }
 
 /* BUBBLES */
+.my-message,
+.their-message {
+  padding: 10px 14px;
+  border-radius: 18px;
+  max-width: 70%;
+  word-wrap: break-word;
+  display: inline-block;
+}
+
+/* right side */
 .my-message {
   background: var(--bubble-color, #4f7cff);
   color: white;
-  padding: 10px 14px;
-  border-radius: 18px 18px 4px 18px;
-  max-width: 70%;
-  word-wrap: break-word;
+  border-bottom-right-radius: 4px;
 }
 
+/* left side */
 .their-message {
   background: #e5e5ea;
   color: black;
-  padding: 10px 14px;
-  border-radius: 18px 18px 18px 4px;
-  max-width: 70%;
-  word-wrap: break-word;
+  border-bottom-left-radius: 4px;
 }
 
-/* INPUT */
+/* input */
 .input-area {
   display: flex;
   padding: 10px;
@@ -115,10 +102,10 @@ body {
   padding: 10px;
 }
 
-.bottom {
-  display: flex;
-  justify-content: space-around;
-  padding: 10px;
-  background: #1c1c1e;
+.topbtn {
+  background: #333;
   color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
 }
