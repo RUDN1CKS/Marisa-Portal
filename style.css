@@ -4,7 +4,6 @@ body {
   background: #0f0f12;
 }
 
-/* login */
 .login {
   height: 100vh;
   display: flex;
@@ -22,14 +21,13 @@ body {
   gap: 10px;
 }
 
-/* app */
 .phone {
   height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
-.top {
+.topbar {
   display: flex;
   justify-content: space-between;
   padding: 10px;
@@ -46,7 +44,6 @@ body {
   flex-direction: column;
 }
 
-/* ROW FIX (this was your main issue) */
 .row {
   display: flex;
   margin: 5px 0;
@@ -56,7 +53,7 @@ body {
   margin-left: auto;
   background: var(--bubble, #0a84ff);
   color: white;
-  padding: 10px 14px;
+  padding: 10px 12px;
   border-radius: 18px 18px 6px 18px;
   max-width: 70%;
 }
@@ -65,16 +62,24 @@ body {
   margin-right: auto;
   background: #e5e5ea;
   color: black;
-  padding: 10px 14px;
+  padding: 10px 12px;
   border-radius: 18px 18px 18px 6px;
   max-width: 70%;
 }
 
-.time {
+.meta {
   font-size: 10px;
   opacity: 0.6;
   margin-top: 4px;
 }
+
+.typing {
+  font-size: 12px;
+  padding: 4px 10px;
+  color: gray;
+}
+
+.hidden { display:none; }
 
 .input {
   display: flex;
@@ -88,15 +93,3 @@ body {
   border-radius: 20px;
   border: none;
 }
-
-.input button {
-  margin-left: 8px;
-}
-
-.typing {
-  font-size: 12px;
-  padding: 4px 10px;
-  color: gray;
-}
-
-.hidden { display:none; }
