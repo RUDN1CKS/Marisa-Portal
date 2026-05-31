@@ -21,8 +21,8 @@ flex-direction:column;
 
 .header {
 display:flex;
-gap:10px;
 align-items:center;
+gap:10px;
 padding:15px;
 background:#1d2026;
 }
@@ -80,14 +80,13 @@ color:white;
 font-size:18px;
 }
 
-/* LOGIN */
 .login-screen {
 position:fixed;
 inset:0;
-background:#0f0f10;
 display:flex;
-align-items:center;
 justify-content:center;
+align-items:center;
+background:#0f0f10;
 }
 
 .login-box {
@@ -117,8 +116,21 @@ color:white;
 }
 
 .message {
+background:#2a2f36;
 padding:10px;
 border-radius:12px;
 max-width:75%;
+}
+
+.topbtn {
 background:#2a2f36;
+border:none;
+color:white;
+padding:8px;
+border-radius:8px;
+cursor:pointer;
+}
+
+.logout {
+background:#ff4d6d;
 }
