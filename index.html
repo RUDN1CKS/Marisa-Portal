@@ -4,126 +4,166 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Marisa Portal ❤️</title>
-<link rel="stylesheet" href="style.css">
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+}
+body{
+background:#0f0f10;
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+color:white;
+}
+.phone{
+width:390px;
+height:844px;
+background:#16181d;
+border-radius:35px;
+overflow:hidden;
+box-shadow:0 0 40px rgba(255,105,180,.15);
+display:flex;
+flex-direction:column;
+}
+.header{
+padding:18px;
+display:flex;
+align-items:center;
+background:#1d2026;
+border-bottom:1px solid #2d3138;
+}
+.avatar{
+width:50px;
+height:50px;
+border-radius:50%;
+background:linear-gradient(45deg,#ff4d6d,#ff8fa3);
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:22px;
+margin-right:12px;
+}
+.header-info h2{
+font-size:18px;
+}
+.header-info p{
+font-size:12px;
+color:#8aff80;
+}
+.malana{
+margin-left:auto;
+background:#3a86ff;
+border:none;
+padding:10px 14px;
+border-radius:15px;
+color:white;
+font-size:18px;
+}
+.messages{
+flex:1;
+padding:20px;
+overflow-y:auto;
+display:flex;
+flex-direction:column;
+gap:12px;
+}
+.received{
+background:#262a31;
+align-self:flex-start;
+padding:12px 16px;
+border-radius:20px 20px 20px 5px;
+max-width:75%;
+}
+.sent{
+background:linear-gradient(45deg,#3a86ff,#6aa7ff);
+align-self:flex-end;
+padding:12px 16px;
+border-radius:20px 20px 5px 20px;
+max-width:75%;
+}
+.input-area{
+padding:15px;
+display:flex;
+gap:10px;
+background:#1d2026;
+}
+.input-area input{
+flex:1;
+background:#2a2f36;
+border:none;
+padding:14px;
+border-radius:25px;
+color:white;
+}
+.input-area button{
+background:#3a86ff;
+border:none;
+width:50px;
+border-radius:50%;
+color:white;
+font-size:18px;
+}
+.bottom{
+height:70px;
+background:#1d2026;
+display:flex;
+justify-content:space-around;
+align-items:center;
+border-top:1px solid #2d3138;
+}
+.bottom button{
+background:none;
+border:none;
+font-size:24px;
+color:white;
+}
+</style>
 </head>
-
 <body>
-
-<div class="app">
-
-    <!-- SIDEBAR -->
-    <div class="sidebar">
-
-        <div class="profile">
-            <div class="logo">MP</div>
-            <div class="name">Marisa Portal</div>
-            <div class="status">secure space • just us ❤️</div>
-        </div>
-
-        <div>
-            <button onclick="showTab('home')">🏠 Home</button>
-            <button onclick="showTab('chat')">💬 Chat</button>
-            <button onclick="showTab('todo')">📝 To-Do</button>
-            <button onclick="showTab('ai')">🤖 Malana</button>
-            <button onclick="showTab('games')">🎮 Games</button>
-        </div>
-
-        <div class="footer">
-            built with love ❤️
-        </div>
-
-    </div>
-
-    <!-- MAIN CONTENT -->
-    <div class="main">
-
-        <!-- HOME -->
-        <div id="home" class="tab active">
-
-            <div class="hero">
-                <h1>Hey ❤️</h1>
-                <p>This is our private space — chat, plans, games, and Malana.</p>
-            </div>
-
-            <div class="grid">
-
-                <div class="card">
-                    <h3>💬 Chat</h3>
-                    <p>Talk anytime, simple and fast.</p>
-                </div>
-
-                <div class="card">
-                    <h3>📝 To-Do</h3>
-                    <p>Stay aligned on everything together.</p>
-                </div>
-
-                <div class="card">
-                    <h3>🤖 Malana</h3>
-                    <p>Your AI helper for life + ideas.</p>
-                </div>
-
-                <div class="card">
-                    <h3>🎮 Games</h3>
-                    <p>Have fun together anytime.</p>
-                </div>
-
-            </div>
-
-        </div>
-
-        <!-- CHAT -->
-        <div id="chat" class="tab">
-            <h1>💬 Chat</h1>
-
-            <div id="chatBox" class="box"></div>
-
-            <div class="row">
-                <input id="chatInput" placeholder="Type something...">
-                <button onclick="sendMessage()">Send</button>
-            </div>
-        </div>
-
-        <!-- TODO -->
-        <div id="todo" class="tab">
-            <h1>📝 To-Do</h1>
-
-            <div class="row">
-                <input id="todoInput" placeholder="Add a task...">
-                <button onclick="addTask()">Add</button>
-            </div>
-
-            <ul id="todoList"></ul>
-        </div>
-
-        <!-- AI -->
-        <div id="ai" class="tab">
-            <h1>🤖 Malana</h1>
-
-            <p class="subtext">Your calm AI assistant for planning and ideas ❤️</p>
-
-            <div id="aiBox" class="box"></div>
-
-            <div class="row">
-                <input id="aiInput" placeholder="Ask Malana anything...">
-                <button onclick="askAI()">Ask</button>
-            </div>
-        </div>
-
-        <!-- GAMES -->
-        <div id="games" class="tab">
-            <h1>🎮 Games</h1>
-
-            <div class="card">
-                <h3>Coming Soon ❤️</h3>
-                <p>Tic Tac Toe, Connect 4, and more.</p>
-            </div>
-        </div>
-
-    </div>
-
+<div class="phone">
+<div class="header">
+<div class="avatar">❤️</div>
+<div class="header-info">
+<h2>Marisa</h2>
+<p>Online Now</p>
 </div>
 
-<script src="app.js"></script>
+🤖
 
+</div>
+<div class="messages">
+<div class="received">
+Hey babe ❤️
+</div>
+<div class="sent">
+Hey beautiful 😊
+</div>
+<div class="received">
+How was work today?
+</div>
+<div class="sent">
+Pretty good. Building our app 😎
+</div>
+</div>
+<div class="input-area">
+<input placeholder="Message Marisa...">
+
+➤
+
+</div>
+<div class="bottom">
+
+🏠
+📝
+🤖
+🎮
+📸
+
+</div>
+</div>
 </body>
-</html>
+</htm
