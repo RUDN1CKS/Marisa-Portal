@@ -1,7 +1,15 @@
 body {
   margin: 0;
   font-family: Arial;
+  background: #f2f2f7;
+  color: #111;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* DARK MODE */
+body.dark {
   background: #0f0f12;
+  color: white;
 }
 
 .login {
@@ -21,19 +29,25 @@ body {
   gap: 10px;
 }
 
+/* PHONE LAYOUT */
 .phone {
   height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
-/* TOP */
+/* TOP BAR */
 .topbar {
   display: flex;
   justify-content: space-between;
   padding: 10px;
   background: #111;
   color: white;
+}
+
+/* DARK MODE TOPBAR */
+body.dark .topbar {
+  background: #1c1c1e;
 }
 
 /* PAGES */
@@ -51,6 +65,12 @@ body {
   background: #f2f2f7;
   display: flex;
   flex-direction: column;
+  transition: background 0.3s ease;
+}
+
+/* DARK CHAT BACKGROUND */
+body.dark .chat {
+  background: #121212;
 }
 
 .row {
@@ -60,7 +80,7 @@ body {
 
 .me {
   margin-left: auto;
-  background: var(--bubble,#0a84ff);
+  background: var(--bubble, #0a84ff);
   color: white;
   padding: 10px 12px;
   border-radius: 18px 18px 6px 18px;
@@ -74,6 +94,12 @@ body {
   padding: 10px 12px;
   border-radius: 18px 18px 18px 6px;
   max-width: 70%;
+}
+
+/* DARK MODE CHAT BUBBLES */
+body.dark .them {
+  background: #2a2a2a;
+  color: white;
 }
 
 .meta {
@@ -99,6 +125,12 @@ body {
   border-radius: 8px;
 }
 
+/* DARK NOTES */
+body.dark .notes li {
+  background: #2a2a2a;
+  color: white;
+}
+
 /* GAME */
 .gameWrap {
   padding: 10px;
@@ -107,7 +139,7 @@ body {
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(3,1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 6px;
   max-width: 300px;
   margin: 0 auto;
@@ -116,6 +148,14 @@ body {
 .grid button {
   height: 80px;
   font-size: 24px;
+  background: white;
+  border: none;
+}
+
+/* DARK GAME */
+body.dark .grid button {
+  background: #2a2a2a;
+  color: white;
 }
 
 /* TABS */
@@ -126,6 +166,10 @@ body {
   background: #111;
 }
 
+body.dark .tabs {
+  background: #1c1c1e;
+}
+
 .tabs button {
   background: none;
   border: none;
@@ -133,6 +177,7 @@ body {
   font-size: 18px;
 }
 
+/* HIDDEN */
 .hidden {
   display: none;
 }
