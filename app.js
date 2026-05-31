@@ -1,183 +1,130 @@
 // =======================
-// FIREBASE SETUP
-// =======================
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import {
-  getFirestore,
-  collection,
-  addDoc,
-  onSnapshot,
-  query,
-  orderBy
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyDpI19Vv9zdNjAYPp97Y12T6A8kot3GbmA",
-  authDomain: "marisa-portal.firebaseapp.com",
-  projectId: "marisa-portal",
-  storageBucket: "marisa-portal.firebasestorage.app",
-  messagingSenderId: "977842432790",
-  appId: "1:977842432790:web:4a05992c796cfdb392fe37"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-// =======================
-// PAGE SWITCHING
+// PAGE NAVIGATION
 // =======================
 
 function showPage(page){
 
-  document.getElementById("chatPage").classList.add("hidden");
-  document.getElementById("todoPage").classList.add("hidden");
-  document.getElementById("malanaPage").classList.add("hidden");
-  document.getElementById("gamesPage").classList.add("hidden");
+    document.getElementById("chatPage").classList.add("hidden");
+    document.getElementById("todoPage").classList.add("hidden");
+    document.getElementById("malanaPage").classList.add("hidden");
+    document.getElementById("gamesPage").classList.add("hidden");
 
-  document.getElementById(page + "Page").classList.remove("hidden");
+    document.getElementById(page + "Page").classList.remove("hidden");
 }
 
+// expose to HTML
 window.showPage = showPage;
 
+
 // =======================
-// CHAT (FIREBASE)
+// CHAT (LOCAL ONLY FOR NOW)
 // =======================
 
-const messagesRef = collection(db, "messages");
+function sendMessage(){
 
-// Send message
-async function sendMessage(){
+    const input = document.getElementById("messageInput");
+    const text = input.value.trim();
 
-  const input = document.getElementById("messageInput");
-  const text = input.value.trim();
+    if(text === "") return;
 
-  if(!text) return;
+    const msgBox = document.getElementById("messages");
 
-  await addDoc(messagesRef, {
-    text: text,
-    time: Date.now()
-  });
+    const bubble = document.createElement("div");
+    bubble.className = "message sent";
+    bubble.textContent = text;
 
-  input.value = "";
+    msgBox.appendChild(bubble);
+
+    input.value = "";
+
+    msgBox.scrollTop = msgBox.scrollHeight;
 }
 
 window.sendMessage = sendMessage;
 
-// Live load messages
-const q = query(messagesRef, orderBy("time", "asc"));
-
-onSnapshot(q, (snapshot) => {
-
-  const box = document.getElementById("messages");
-  box.innerHTML = "";
-
-  snapshot.forEach(doc => {
-
-    const data = doc.data();
-
-    const div = document.createElement("div");
-    div.className = "message sent";
-    div.textContent = data.text;
-
-    box.appendChild(div);
-  });
-
-});
 
 // =======================
-// TODO LIST (FIREBASE)
+// TODO LIST (LOCAL)
 // =======================
 
-const todoRef = collection(db, "todos");
+function addTask(){
 
-async function addTask(){
+    const input = document.getElementById("todoInput");
+    const text = input.value.trim();
 
-  const input = document.getElementById("todoInput");
-  const text = input.value.trim();
+    if(text === "") return;
 
-  if(!text) return;
+    const list = document.getElementById("todoList");
 
-  await addDoc(todoRef, {
-    text: text,
-    time: Date.now()
-  });
+    const li = document.createElement("li");
+    li.textContent = text;
 
-  input.value = "";
+    list.appendChild(li);
+
+    input.value = "";
 }
 
 window.addTask = addTask;
 
-// Live todos
-const tq = query(todoRef, orderBy("time", "asc"));
-
-onSnapshot(tq, (snapshot) => {
-
-  const list = document.getElementById("todoList");
-  list.innerHTML = "";
-
-  snapshot.forEach(doc => {
-
-    const li = document.createElement("li");
-    li.textContent = doc.data().text;
-
-    list.appendChild(li);
-  });
-
-});
 
 // =======================
-// MALANA (simple AI logic)
+// MALANA AI (SIMPLE RESPONSES)
 // =======================
 
 function askMalana(){
 
-  const input = document.getElementById("aiInput");
-  const text = input.value.trim();
+    const input = document.getElementById("aiInput");
+    const text = input.value.trim();
 
-  if(!text) return;
+    if(text === "") return;
 
-  const box = document.getElementById("aiMessages");
+    const box = document.getElementById("aiMessages");
 
-  const user = document.createElement("div");
-  user.className = "message sent";
-  user.textContent = text;
+    // user message
+    const user = document.createElement("div");
+    user.className = "message sent";
+    user.textContent = text;
 
-  box.appendChild(user);
+    box.appendChild(user);
 
-  const replies = [
-    "I’m listening ❤️",
-    "That actually sounds really good.",
-    "You should talk to Marisa about that 😊",
-    "I think you’re on the right track.",
-    "I’m proud of you ❤️",
-    "Let’s figure it out step by step."
-  ];
+    // AI replies
+    const replies = [
+        "I hear you ❤️",
+        "That actually makes sense.",
+        "You and Marisa should talk that through 😊",
+        "I think you're doing great.",
+        "Let’s take it one step at a time.",
+        "That sounds like something worth doing ❤️",
+        "I'm here with you."
+    ];
 
-  const ai = document.createElement("div");
-  ai.className = "message received";
-  ai.textContent = replies[Math.floor(Math.random() * replies.length)];
+    const ai = document.createElement("div");
+    ai.className = "message received";
+    ai.textContent = replies[Math.floor(Math.random() * replies.length)];
 
-  box.appendChild(ai);
+    box.appendChild(ai);
 
-  input.value = "";
+    input.value = "";
+
+    box.scrollTop = box.scrollHeight;
 }
 
 window.askMalana = askMalana;
+
 
 // =======================
 // TIC TAC TOE
 // =======================
 
-let current = "X";
+let currentPlayer = "X";
 
 function move(cell){
 
-  if(cell.textContent !== "") return;
+    if(cell.textContent !== "") return;
 
-  cell.textContent = current;
+    cell.textContent = currentPlayer;
 
-  current = current === "X" ? "O" : "X";
+    currentPlayer = currentPlayer === "X" ? "O" : "X";
 }
 
 window.move = move;
