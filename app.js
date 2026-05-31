@@ -219,6 +219,9 @@ onAuthStateChanged(auth, user => {
   if (user) {
     loginPage.style.display = "none";
     appDiv.style.display = "block";
+  } else {
+    loginPage.style.display = "flex";
+    appDiv.style.display = "none";
   }
 });
 
