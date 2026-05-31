@@ -1,182 +1,202 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
-getFirestore,
-collection,
-addDoc,
-onSnapshot,
-query,
-orderBy
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-import {
-getAuth,
-createUserWithEmailAndPassword,
-signInWithEmailAndPassword,
-onAuthStateChanged
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-// ================= FIREBASE =================
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  onSnapshot,
+  query,
+  orderBy
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+// ================= FIREBASE CONFIG =================
 const firebaseConfig = {
-apiKey: "AIzaSyDpI19Vv9zdNjAYPp97Y12T6A8kot3GbmA",
-authDomain: "marisa-portal.firebaseapp.com",
-projectId: "marisa-portal",
-storageBucket: "marisa-portal.firebasestorage.app",
-messagingSenderId: "977842432790",
-appId: "1:977842432790:web:4a05992c796cfdb392fe37"
+  apiKey: "AIzaSyDpI19Vv9zdNjAYPp97Y12T6A8kot3GbmA",
+  authDomain: "marisa-portal.firebaseapp.com",
+  projectId: "marisa-portal",
+  storageBucket: "marisa-portal.firebasestorage.app",
+  messagingSenderId: "977842432790",
+  appId: "1:977842432790:web:4a05992c796cfdb392fe37"
 };
 
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
 const auth = getAuth(app);
+const db = getFirestore(app);
 
+// ================= STATE =================
 let currentUser = null;
 
-// ================= AUTH =================
+// ================= AUTH STATE =================
 onAuthStateChanged(auth, (user) => {
-const login = document.getElementById("loginPage");
-const appDiv = document.getElementById("app");
+  const loginPage = document.getElementById("loginPage");
+  const appPage = document.getElementById("app");
 
-if (!login || !appDiv) return;
+  if (!loginPage || !appPage) return;
 
-if (user) {
-currentUser = user;
-login.style.display = "none";
-appDiv.style.display = "block";
-} else {
-currentUser = null;
-login.style.display = "flex";
-appDiv.style.display = "none";
-}
+  if (user) {
+    currentUser = user;
+    loginPage.style.display = "none";
+    appPage.style.display = "block";
+  } else {
+    currentUser = null;
+    loginPage.style.display = "flex";
+    appPage.style.display = "none";
+  }
 });
 
-// ================= LOGIN =================
-window.login = () => {
-signInWithEmailAndPassword(
-auth,
-document.getElementById("email").value,
-document.getElementById("password").value
-).catch(e => alert(e.message));
-};
-
+// ================= AUTH FUNCTIONS =================
 window.signup = () => {
-createUserWithEmailAndPassword(
-auth,
-document.getElementById("email").value,
-document.getElementById("password").value
-).catch(e => alert(e.message));
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  createUserWithEmailAndPassword(auth, email, password)
+    .catch(err => alert("SIGNUP ERROR: " + err.message));
 };
 
-window.logout = () => auth.signOut();
+window.login = () => {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
 
-window.refreshApp = () => location.reload();
+  signInWithEmailAndPassword(auth, email, password)
+    .catch(err => alert("LOGIN ERROR: " + err.message));
+};
 
-// ================= NAV =================
+window.logout = () => {
+  signOut(auth);
+};
+
+window.refreshApp = () => {
+  location.reload();
+};
+
+// ================= NAVIGATION =================
 window.showPage = (page) => {
-["chatPage","todoPage","malanaPage","gamesPage"].forEach(id=>{
-document.getElementById(id)?.classList.add("hidden");
-});
+  ["chatPage", "todoPage", "malanaPage", "gamesPage"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.add("hidden");
+  });
 
-document.getElementById(page + "Page")?.classList.remove("hidden");
+  const target = document.getElementById(page + "Page");
+  if (target) target.classList.remove("hidden");
 };
 
 // ================= CHAT =================
 const chatRef = collection(db, "messages");
 
 window.sendMessage = () => {
-const input = document.getElementById("messageInput");
-if (!input.value.trim()) return;
+  const input = document.getElementById("messageInput");
+  if (!input.value.trim()) return;
 
-addDoc(chatRef, {
-text: input.value,
-sender: currentUser?.email || "unknown",
-time: Date.now()
-});
+  addDoc(chatRef, {
+    text: input.value,
+    sender: currentUser?.email || "unknown",
+    time: Date.now()
+  });
 
-input.value = "";
+  input.value = "";
 };
 
-onSnapshot(query(chatRef, orderBy("time","asc")), (snap) => {
+// Render chat
+onSnapshot(query(chatRef, orderBy("time", "asc")), (snap) => {
+  const box = document.getElementById("messages");
+  if (!box) return;
 
-const box = document.getElementById("messages");
-if (!box) return;
+  box.innerHTML = "";
 
-box.innerHTML = "";
+  snap.forEach(doc => {
+    const data = doc.data();
 
-snap.forEach(doc => {
+    const isYou = currentUser && data.sender === currentUser.email;
 
-const data = doc.data();
+    const div = document.createElement("div");
 
-const isYou = currentUser && data.sender === currentUser.email;
+    div.style.maxWidth = "75%";
+    div.style.margin = "6px";
+    div.style.padding = "10px";
+    div.style.borderRadius = "12px";
+    div.style.color = "white";
+    div.style.alignSelf = isYou ? "flex-end" : "flex-start";
+    div.style.background = isYou ? "#3a86ff" : "#2a2f36";
 
-const div = document.createElement("div");
+    const time = new Date(data.time).toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit"
+    });
 
-div.className = "message";
-div.style.alignSelf = isYou ? "flex-end" : "flex-start";
-div.style.background = isYou ? "#3a86ff" : "#2a2f36";
-div.style.color = "white";
+    div.innerHTML = `
+      ${data.text}
+      <div style="font-size:10px;opacity:0.6;margin-top:5px;">
+        ${time}
+      </div>
+    `;
 
-div.innerHTML = `
-${data.text}
-<div style="font-size:10px;opacity:0.6;margin-top:5px;">
-${new Date(data.time).toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})}
-</div>
-`;
-
-box.appendChild(div);
-
-});
-
+    box.appendChild(div);
+  });
 });
 
 // ================= TODO =================
-const todoRef = collection(db,"todos");
+const todoRef = collection(db, "todos");
 
 window.addTask = () => {
-const input = document.getElementById("todoInput");
-if (!input.value.trim()) return;
+  const input = document.getElementById("todoInput");
+  if (!input.value.trim()) return;
 
-addDoc(todoRef,{
-text:input.value,
-time:Date.now()
-});
+  addDoc(todoRef, {
+    text: input.value,
+    time: Date.now()
+  });
 
-input.value="";
+  input.value = "";
 };
 
-onSnapshot(query(todoRef,orderBy("time","asc")),(snap)=>{
-const list=document.getElementById("todoList");
-if (!list) return;
+onSnapshot(query(todoRef, orderBy("time", "asc")), (snap) => {
+  const list = document.getElementById("todoList");
+  if (!list) return;
 
-list.innerHTML="";
+  list.innerHTML = "";
 
-snap.forEach(d=>{
-const li=document.createElement("li");
-li.textContent=d.data().text;
-list.appendChild(li);
-});
+  snap.forEach(d => {
+    const li = document.createElement("li");
+    li.textContent = d.data().text;
+    list.appendChild(li);
+  });
 });
 
 // ================= MALANA =================
 window.askMalana = () => {
-const input=document.getElementById("aiInput");
-if(!input.value.trim()) return;
+  const input = document.getElementById("aiInput");
+  if (!input.value.trim()) return;
 
-const box=document.getElementById("aiMessages");
+  const box = document.getElementById("aiMessages");
 
-box.innerHTML += `<div class="message">${input.value}</div>`;
+  box.innerHTML += `<div class="message">${input.value}</div>`;
 
-const replies=["I hear you ❤️","Got you.","Keep going ❤️"];
+  const replies = [
+    "I hear you ❤️",
+    "Got you.",
+    "Keep going ❤️"
+  ];
 
-box.innerHTML += `<div class="message">${replies[Math.floor(Math.random()*3)]}</div>`;
+  box.innerHTML += `<div class="message">
+    ${replies[Math.floor(Math.random() * replies.length)]}
+  </div>`;
 
-input.value="";
+  input.value = "";
 };
 
 // ================= GAME =================
-let current="X";
+let current = "X";
 
-window.move=(cell)=>{
-if(cell.textContent) return;
-cell.textContent=current;
-current=current==="X"?"O":"X";
+window.move = (cell) => {
+  if (cell.textContent) return;
+
+  cell.textContent = current;
+  current = current === "X" ? "O" : "X";
 };
