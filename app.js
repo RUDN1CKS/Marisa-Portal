@@ -45,12 +45,23 @@ const input = document.getElementById("messageInput");
 
 /* AUTH */
 window.login = () =>
-  signInWithEmailAndPassword(auth, email.value, password.value);
+  signInWithEmailAndPassword(
+    auth,
+    document.getElementById("email").value,
+    document.getElementById("password").value
+  );
 
 window.signup = () =>
-  createUserWithEmailAndPassword(auth, email.value, password.value);
-
-window.logout = () => signOut(auth);
+  createUserWithEmailAndPassword(
+    auth,
+    document.getElementById("email").value,
+    document.getElementById("password").value
+  );
+window.logout = async () => {
+  await signOut(auth);
+  appDiv.style.display = "none";
+  loginPage.style.display = "flex";
+};
 
 window.refresh = () => location.reload();
 
