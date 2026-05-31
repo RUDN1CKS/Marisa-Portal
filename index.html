@@ -16,7 +16,7 @@
     <input id="password" type="password" placeholder="Password">
 
     <button onclick="login()">Login</button>
-    <button onclick="signup()">Create Account</button>
+    <button onclick="signup()">Create</button>
   </div>
 </div>
 
@@ -25,13 +25,15 @@
 
     <div class="header">
       <div>🔥 FRAGGO</div>
-      <div style="margin-left:auto;">
+
+      <div style="margin-left:auto; display:flex; gap:8px;">
         <button onclick="pickColor()">🎨</button>
         <button onclick="logout()">⎋</button>
       </div>
     </div>
 
-    <div id="chatPage" class="page">
+    <div class="page">
+
       <div id="messages" class="messages"></div>
 
       <div id="typing" class="typing hidden">typing...</div>
@@ -40,6 +42,7 @@
         <input id="messageInput" placeholder="Message..." oninput="typing()">
         <button onclick="sendMessage()">➤</button>
       </div>
+
     </div>
 
   </div>
