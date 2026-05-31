@@ -19,7 +19,7 @@ import {
   setDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// 🔥 FIREBASE CONFIG (yours)
+/* FIREBASE */
 const firebaseConfig = {
   apiKey: "AIzaSyDpI19Vv9zdNjAYPp97Y12T6A8kot3GbmA",
   authDomain: "marisa-portal.firebaseapp.com",
@@ -33,127 +33,121 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// DOM safe init
-window.addEventListener("DOMContentLoaded", () => {
+/* DOM */
+const loginPage = document.getElementById("loginPage");
+const appDiv = document.getElementById("app");
+const chat = document.getElementById("messages");
+const input = document.getElementById("messageInput");
 
-  const loginPage = document.getElementById("loginPage");
-  const appDiv = document.getElementById("app");
-  const chat = document.getElementById("messages");
-  const input = document.getElementById("messageInput");
+/* AUTH */
+window.login = () =>
+  signInWithEmailAndPassword(auth, email.value, password.value);
 
-  // ENCODE (light privacy)
-  const enc = t => btoa(unescape(encodeURIComponent(t)));
-  const dec = t => decodeURIComponent(escape(atob(t)));
+window.signup = () =>
+  createUserWithEmailAndPassword(auth, email.value, password.value);
 
-  // LOGIN
-  window.login = () =>
-    signInWithEmailAndPassword(auth, email.value, password.value);
+window.logout = () => signOut(auth);
 
-  window.signup = () =>
-    createUserWithEmailAndPassword(auth, email.value, password.value);
+/* SEND MESSAGE */
+window.sendMessage = async () => {
+  if (!input.value.trim()) return;
 
-  window.logout = () => signOut(auth);
-
-  // SEND MESSAGE
-  window.sendMessage = async () => {
-    if (!input.value) return;
-
-    await addDoc(collection(db, "messages"), {
-      text: enc(input.value),
-      uid: auth.currentUser.uid,
-      createdAt: serverTimestamp()
-    });
-
-    input.value = "";
-    stopTyping();
-  };
-
-  // LIVE CHAT
-  const q = query(collection(db, "messages"), orderBy("createdAt"));
-
-  onSnapshot(q, snap => {
-    chat.innerHTML = "";
-
-    snap.forEach(d => {
-      const m = d.data();
-      if (!m.text) return;
-
-      const isMe = m.uid === auth.currentUser?.uid;
-
-      const row = document.createElement("div");
-      row.className = "row";
-
-      const bubble = document.createElement("div");
-      bubble.className = isMe ? "me" : "them";
-
-      const text = document.createElement("div");
-      text.textContent = dec(m.text);
-
-      const time = document.createElement("div");
-      time.className = "time";
-      time.textContent = m.createdAt?.seconds
-        ? new Date(m.createdAt.seconds * 1000).toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit"
-          })
-        : "";
-
-      bubble.appendChild(text);
-      bubble.appendChild(time);
-      row.appendChild(bubble);
-      chat.appendChild(row);
-    });
-
-    chat.scrollTop = chat.scrollHeight;
+  await addDoc(collection(db, "messages"), {
+    text: input.value,
+    uid: auth.currentUser.uid,
+    createdAt: serverTimestamp()
   });
 
-  // TYPING
-  let typingTimer;
+  input.value = "";
+  stopTyping();
+};
 
-  window.typing = async () => {
-    await setDoc(doc(db, "typing", "global"), {
-      uid: auth.currentUser.uid,
-      typing: true
-    });
+/* CHAT STREAM (FIXED RENDERING) */
+const q = query(collection(db, "messages"), orderBy("createdAt"));
 
-    clearTimeout(typingTimer);
-    typingTimer = setTimeout(stopTyping, 1000);
-  };
+onSnapshot(q, snap => {
+  chat.innerHTML = "";
 
-  function stopTyping() {
-    setDoc(doc(db, "typing", "global"), {
-      uid: "",
-      typing: false
-    });
+  snap.forEach(d => {
+    const m = d.data();
+    if (!m.text) return;
+
+    const isMe = m.uid === auth.currentUser?.uid;
+
+    const row = document.createElement("div");
+    row.className = "row";
+
+    const bubble = document.createElement("div");
+    bubble.className = isMe ? "me" : "them";
+
+    const text = document.createElement("div");
+    text.textContent = m.text;
+
+    const time = document.createElement("div");
+    time.className = "time";
+    time.textContent = m.createdAt?.seconds
+      ? new Date(m.createdAt.seconds * 1000).toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit"
+        })
+      : "";
+
+    bubble.appendChild(text);
+    bubble.appendChild(time);
+    row.appendChild(bubble);
+    chat.appendChild(row);
+  });
+
+  chat.scrollTop = chat.scrollHeight;
+});
+
+/* TYPING */
+let typingTimer;
+
+window.typing = async () => {
+  if (!auth.currentUser) return;
+
+  await setDoc(doc(db, "typing", "global"), {
+    uid: auth.currentUser.uid,
+    typing: true
+  });
+
+  clearTimeout(typingTimer);
+  typingTimer = setTimeout(stopTyping, 1000);
+};
+
+function stopTyping() {
+  setDoc(doc(db, "typing", "global"), {
+    uid: "",
+    typing: false
+  });
+}
+
+/* TYPING LISTENER */
+import { onSnapshot as listenDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+listenDoc(doc(db, "typing", "global"), snap => {
+  const data = snap.data();
+  const t = document.getElementById("typing");
+
+  if (!data?.typing || data.uid === auth.currentUser?.uid) {
+    t.classList.add("hidden");
+  } else {
+    t.classList.remove("hidden");
   }
+});
 
-  // typing listener
-  import { onSnapshot as listenDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+/* BUBBLE COLOR */
+window.pickColor = () => {
+  const c = prompt("Enter color (pink works):");
+  if (!c) return;
+  document.documentElement.style.setProperty("--bubble", c);
+};
 
-  listenDoc(doc(db, "typing", "global"), snap => {
-    const data = snap.data();
-    const t = document.getElementById("typing");
-
-    if (!data?.typing || data.uid === auth.currentUser?.uid) {
-      t.classList.add("hidden");
-    } else {
-      t.classList.remove("hidden");
-    }
-  });
-
-  // BUBBLE COLOR (PINK READY)
-  window.pickColor = () => {
-    const c = prompt("Color (try pink or #ff69b4):");
-    if (!c) return;
-    document.documentElement.style.setProperty("--bubble", c);
-  };
-
-  // AUTH STATE
-  onAuthStateChanged(auth, user => {
-    if (user) {
-      loginPage.style.display = "none";
-      appDiv.style.display = "block";
-    }
-  });
-
+/* AUTH STATE */
+onAuthStateChanged(auth, user => {
+  if (user) {
+    loginPage.style.display = "none";
+    appDiv.style.display = "block";
+  }
 });
