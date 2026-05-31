@@ -61,29 +61,26 @@ border:none;
 padding:10px 14px;
 border-radius:15px;
 color:white;
-font-size:18px;
 }
-.messages{
+.page{
 flex:1;
-padding:20px;
 overflow-y:auto;
-display:flex;
-flex-direction:column;
-gap:12px;
+padding:20px;
+}
+.message{
+padding:12px 16px;
+border-radius:20px;
+margin-bottom:10px;
+max-width:75%;
 }
 .received{
 background:#262a31;
-align-self:flex-start;
-padding:12px 16px;
-border-radius:20px 20px 20px 5px;
-max-width:75%;
+width:fit-content;
 }
 .sent{
 background:linear-gradient(45deg,#3a86ff,#6aa7ff);
-align-self:flex-end;
-padding:12px 16px;
-border-radius:20px 20px 5px 20px;
-max-width:75%;
+margin-left:auto;
+width:fit-content;
 }
 .input-area{
 padding:15px;
@@ -121,6 +118,27 @@ border:none;
 font-size:24px;
 color:white;
 }
+.hidden{
+display:none;
+}
+.todo-input{
+width:100%;
+padding:12px;
+border:none;
+border-radius:15px;
+margin-top:10px;
+}
+.todo-btn{
+margin-top:10px;
+padding:10px 15px;
+border:none;
+border-radius:10px;
+background:#3a86ff;
+color:white;
+}
+li{
+margin-top:10px;
+}
 </style>
 </head>
 <body>
@@ -135,35 +153,73 @@ color:white;
 🤖
 
 </div>
-<div class="messages">
-<div class="received">
+<div id="chatPage" class="page">
+<div id="messages">
+<div class="message received">
 Hey babe ❤️
 </div>
-<div class="sent">
-Hey beautiful 😊
+<div class="message sent">
+Building our app 😎
 </div>
-<div class="received">
-How was work today?
 </div>
-<div class="sent">
-Pretty good. Building our app 😎
 </div>
+<div id="todoPage" class="page hidden">
+<h2>📝 Shared To-Do</h2>
+<input id="todoInput" class="todo-input" placeholder="Add task...">
+<button class="todo-btn" onclick="addTask()">
+Add Task
+</button>
+<ul id="todoList"></ul>
+</div>
+<div id="malanaPage" class="page hidden">
+<h2>🤖 Malana</h2>
+<br>
+<p>Hello ❤️ I'm Malana.</p>
+<br>
+<p>Eventually I'll help with planning, reminders, date ideas, and more.</p>
+</div>
+<div id="gamesPage" class="page hidden">
+<h2>🎮 Games</h2>
+<br>
+<p>Tic Tac Toe coming soon.</p>
 </div>
 <div class="input-area">
-<input placeholder="Message Marisa...">
-
-➤
-
+<input id="messageInput" placeholder="Message Marisa...">
+<button onclick="sendMessage()">➤</button>
 </div>
 <div class="bottom">
-
-🏠
-📝
-🤖
-🎮
-📸
-
+<button onclick="showPage('chat')">💬</button>
+<button onclick="showPage('todo')">📝</button>
+<button onclick="showPage('malana')">🤖</button>
+<button onclick="showPage('games')">🎮</button>
 </div>
 </div>
+<script>
+function showPage(page){
+document.getElementById('chatPage').classList.add('hidden');
+document.getElementById('todoPage').classList.add('hidden');
+document.getElementById('malanaPage').classList.add('hidden');
+document.getElementById('gamesPage').classList.add('hidden');
+document.getElementById(page + 'Page').classList.remove('hidden');
+}
+function sendMessage(){
+const input = document.getElementById('messageInput');
+const text = input.value.trim();
+if(text === '') return;
+const bubble = document.createElement('div');
+bubble.className = 'message sent';
+bubble.textContent = text;
+document.getElementById('messages').appendChild(bubble);
+input.value = '';
+}
+function addTask(){
+const input = document.getElementById('todoInput');
+if(input.value.trim() === '') return;
+const li = document.createElement('li');
+li.textContent = input.value;
+document.getElementById('todoList').appendChild(li);
+input.value = '';
+}
+</script>
 </body>
-</htm
+</ht
